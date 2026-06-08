@@ -39,8 +39,8 @@
 </main>
 <footer class="site-footer">
     <span>&copy; <?= date('Y') ?> Q to me</span>
-    <span>Разработка и поддержка: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media</a></span>
-    <a href="/impressum">Impressum</a>
+    <span>Разработка и поддержка: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a></span>
+    <span><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></span>
 </footer>
 </body>
 </html>

@@ -46,13 +46,25 @@ nav a:hover { color: var(--accent); }
 .site-footer {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
     flex-wrap: wrap;
-    padding: 24px 20px 34px;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 18px 20px 28px;
     color: var(--muted);
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
 }
-.site-footer a { font-weight: 700; text-decoration: none; }
+.site-footer span { display: inline-flex; align-items: center; gap: 6px; }
+.site-footer span:not(:last-child)::after {
+    content: "·";
+    color: var(--line);
+    margin-left: 2px;
+}
+.site-footer a { color: var(--muted); font-weight: 700; text-decoration: none; }
+.site-footer a:hover { color: var(--accent-dark); }
 .panel {
     background: var(--panel);
     border: 1px solid var(--line);

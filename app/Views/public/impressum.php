@@ -5,7 +5,7 @@
     <dl class="impressum-list">
         <div>
             <dt>Verantwortlich</dt>
-            <dd>Atapin Vladimir</dd>
+            <dd>Volodymyr Atapin</dd>
         </div>
         <div>
             <dt>Anschrift</dt>
@@ -22,7 +22,7 @@
     </dl>
 
     <h2>Verantwortlich für den Inhalt</h2>
-    <p>Atapin Vladimir</p>
+    <p>Volodymyr Atapin</p>
 
     <h2>Hinweis</h2>
     <p class="muted">

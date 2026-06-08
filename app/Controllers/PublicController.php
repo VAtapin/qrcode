@@ -69,6 +69,14 @@ final class PublicController
     }
 
     /**
+     * Shows the privacy policy page.
+     */
+    public function datenschutz(): void
+    {
+        view('public/datenschutz', ['title' => 'Datenschutz']);
+    }
+
+    /**
      * Validates and stores a new short link, generates QR, and sends notifications.
      */
     public function store(): void

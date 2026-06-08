@@ -19,6 +19,7 @@ $router->get('/', [PublicController::class, 'gallery']);
 $router->get('/new', [PublicController::class, 'create']);
 $router->get('/create', [PublicController::class, 'create']);
 $router->get('/impressum', [PublicController::class, 'impressum']);
+$router->get('/datenschutz', [PublicController::class, 'datenschutz']);
 $router->post('/links', [PublicController::class, 'store']);
 $router->get('/result/{code}', [PublicController::class, 'result']);
 $router->get('/qr/{code}', [PublicController::class, 'qrPage']);
