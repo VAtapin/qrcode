@@ -4,9 +4,8 @@ Options -Indexes
     RewriteEngine On
 
     RewriteRule ^(app|config|database|storage/logs|vendor)(/|$) - [F,L]
-    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
-    RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
-    RewriteRule ^(.*)$ public/$1 [L]
+    RewriteRule ^assets/(.+)$ public/assets/$1 [L]
+    RewriteRule ^favicon\.ico$ public/favicon.ico [L]
     RewriteRule ^$ public/index.php [E=APP_REQUEST_PATH:/,L]
     RewriteRule ^(.+)$ public/index.php [E=APP_REQUEST_PATH:/$1,L]
 </IfModule>
