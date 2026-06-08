@@ -119,8 +119,8 @@ final class AdminController
             redirect('/admin');
         }
 
+        AdminLog::write((int) $_SESSION['admin_id'], 'deleted', null);
         Link::delete((int) $id);
-        AdminLog::write((int) $_SESSION['admin_id'], 'deleted', (int) $id);
         flash('success', 'Запись удалена.');
         redirect('/admin');
     }
