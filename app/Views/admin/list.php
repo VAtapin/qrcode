@@ -49,6 +49,10 @@
                                 </form>
                             <?php endif; ?>
                         <?php endforeach; ?>
+                        <form method="post" action="/admin/delete/<?= e((string) $link['id']) ?>" onsubmit="return confirm('Удалить запись и QR-код?')">
+                            <?= \App\Core\Csrf::field() ?>
+                            <button type="submit" class="danger">Удалить</button>
+                        </form>
                     </td>
                 </tr>
             <?php endforeach; ?>

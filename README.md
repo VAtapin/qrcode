@@ -1,4 +1,4 @@
-# QR Moderation
+# Q to me
 
 PHP 8.2+ service for moderated short links and QR codes.
 
@@ -19,6 +19,7 @@ The main page shows a public gallery of approved QR codes. New links are created
 - SMTP settings with safe fallback to `storage/logs/mail.log`.
 - Editable short-code blacklist in `/admin/blacklist`.
 - Click statistics: count and last click date.
+- Admin deletion removes both the database record and the generated QR PNG.
 
 ## Installation
 

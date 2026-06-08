@@ -26,7 +26,8 @@ a { color: var(--accent-dark); }
     background: var(--panel);
     border-bottom: 1px solid var(--line);
 }
-.brand { font-weight: 700; text-decoration: none; color: var(--text); }
+.brand { display: grid; gap: 1px; font-weight: 700; text-decoration: none; color: var(--text); }
+.brand small { color: var(--muted); font-size: 12px; font-weight: 400; }
 nav { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 nav a { text-decoration: none; }
 .container { max-width: 1120px; margin: 32px auto; padding: 0 20px; }

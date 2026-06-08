@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 return [
     'app' => [
-        'name' => 'QR Moderation',
-        'base_url' => 'http://localhost',
+        'name' => 'Q to me',
+        'base_url' => 'https://q-2.me',
         'timezone' => 'UTC',
         'secret_salt' => 'change-this-long-random-secret',
     ],

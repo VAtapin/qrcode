@@ -7,5 +7,6 @@ Options -Indexes
     RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
     RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
     RewriteRule ^(.*)$ public/$1 [L]
-    RewriteRule ^(.*)$ public/index.php [L]
+    RewriteRule ^$ public/index.php [E=APP_REQUEST_PATH:/,L]
+    RewriteRule ^(.+)$ public/index.php [E=APP_REQUEST_PATH:/$1,L]
 </IfModule>

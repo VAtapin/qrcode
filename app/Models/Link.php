@@ -162,7 +162,15 @@ final class Link
 
     public static function delete(int $id): void
     {
+        $link = self::find($id);
         $stmt = Database::pdo()->prepare('DELETE FROM qr_links WHERE id = :id');
         $stmt->execute(['id' => $id]);
+
+        if ($link !== null && !empty($link['qr_path'])) {
+            $path = STORAGE_PATH . '/' . $link['qr_path'];
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
     }
 }

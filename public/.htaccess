@@ -4,5 +4,6 @@ Options -Indexes
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [L]
+    RewriteRule ^$ index.php [E=APP_REQUEST_PATH:/,L]
+    RewriteRule ^(.+)$ index.php [E=APP_REQUEST_PATH:/$1,L]
 </IfModule>

@@ -8,7 +8,10 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" href="/">QR Moderation</a>
+    <a class="brand" href="/">
+        <span>Q to me</span>
+        <small>q-2.me</small>
+    </a>
     <nav>
         <a href="/">Галерея</a>
         <a href="/new">Новая ссылка</a>

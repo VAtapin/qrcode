@@ -22,6 +22,6 @@
     </div>
     <form method="post" action="/admin/delete/<?= e((string) $link['id']) ?>" class="danger-form">
         <?= \App\Core\Csrf::field() ?>
-        <button type="submit" class="danger">Удалить запись</button>
+        <button type="submit" class="danger">Удалить запись и QR-код</button>
     </form>
 </section>
