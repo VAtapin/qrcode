@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Admin;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -157,7 +158,7 @@ final class MailService
             return;
         }
 
-        $this->withLinkLocale($link, function () use ($link, $adminEmail): void {
+        $this->withLocale(Admin::notificationLocale(), function () use ($link, $adminEmail): void {
         $this->sendLinkMail(
             $adminEmail,
             __('mail.admin_new_subject'),
@@ -214,8 +215,16 @@ final class MailService
      */
     private function withLinkLocale(array $link, callable $callback): void
     {
+        $this->withLocale((string) ($link['locale'] ?? default_locale()), $callback);
+    }
+
+    /**
+     * Runs notification rendering in a specific locale.
+     */
+    private function withLocale(string $locale, callable $callback): void
+    {
         $previous = app_locale();
-        app_locale((string) ($link['locale'] ?? default_locale()), false);
+        app_locale($locale, false);
 
         try {
             $callback();

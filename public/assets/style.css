@@ -124,7 +124,7 @@ h1 { margin: 0 0 10px; font-size: 28px; }
     overflow: hidden;
 }
 label { display: grid; gap: 8px; font-weight: 700; }
-input, textarea {
+input, textarea, select {
     width: 100%;
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -132,7 +132,7 @@ input, textarea {
     font: inherit;
     background: #fff;
 }
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
     outline: 3px solid rgba(15, 118, 110, .16);
     border-color: var(--accent);
 }

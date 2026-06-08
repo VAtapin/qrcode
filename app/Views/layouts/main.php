@@ -22,6 +22,7 @@
         <?php if (!empty($_SESSION['admin_id'])): ?>
             <a href="/admin"><?= e(__('nav.admin')) ?></a>
             <a href="/admin/blacklist"><?= e(__('nav.blacklist')) ?></a>
+            <a href="/admin/settings"><?= e(__('nav.settings')) ?></a>
             <form method="post" action="/logout" class="inline">
                 <?= \App\Core\Csrf::field() ?>
                 <button type="submit"><?= e(__('nav.logout')) ?></button>

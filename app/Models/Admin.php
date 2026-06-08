@@ -50,9 +50,9 @@ final class Admin
     public static function create(string $login, string $passwordHash): void
     {
         $stmt = Database::pdo()->prepare(
-            'INSERT INTO admins (login, password_hash, created_at) VALUES (:login, :password_hash, NOW())'
+            'INSERT INTO admins (login, password_hash, locale, created_at) VALUES (:login, :password_hash, :locale, NOW())'
         );
-        $stmt->execute(['login' => $login, 'password_hash' => $passwordHash]);
+        $stmt->execute(['login' => $login, 'password_hash' => $passwordHash, 'locale' => default_locale()]);
     }
 
     /**
@@ -62,5 +62,30 @@ final class Admin
     {
         $stmt = Database::pdo()->prepare('UPDATE admins SET last_login_at = NOW() WHERE id = :id');
         $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Stores the preferred interface language for an administrator.
+     */
+    public static function updateLocale(int $id, string $locale): void
+    {
+        $stmt = Database::pdo()->prepare('UPDATE admins SET locale = :locale WHERE id = :id');
+        $stmt->execute(['id' => $id, 'locale' => $locale]);
+    }
+
+    /**
+     * Returns the locale used for administrator notifications.
+     */
+    public static function notificationLocale(): string
+    {
+        try {
+            $stmt = Database::pdo()->prepare('SELECT locale FROM admins ORDER BY id ASC LIMIT 1');
+            $stmt->execute();
+            $locale = (string) ($stmt->fetchColumn() ?: default_locale());
+        } catch (\Throwable) {
+            $locale = default_locale();
+        }
+
+        return in_array($locale, supported_locales(), true) ? $locale : default_locale();
     }
 }

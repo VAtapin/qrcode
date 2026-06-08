@@ -26,5 +26,9 @@ final class AuthMiddleware
         if (empty($_SESSION['admin_id'])) {
             redirect('/login');
         }
+
+        if (!empty($_SESSION['admin_locale']) && in_array($_SESSION['admin_locale'], supported_locales(), true)) {
+            app_locale((string) $_SESSION['admin_locale'], false);
+        }
     }
 }

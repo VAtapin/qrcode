@@ -15,6 +15,7 @@ namespace App\Controllers;
 
 use App\Core\Csrf;
 use App\Middleware\AuthMiddleware;
+use App\Models\Admin;
 use App\Models\AdminLog;
 use App\Models\BlacklistWord;
 use App\Models\Link;
@@ -46,6 +47,38 @@ final class AdminController
     public function listRejected(): void { $this->list('rejected'); }
     /** Shows blocked links. */
     public function listBlocked(): void { $this->list('blocked'); }
+
+    /**
+     * Shows administrator settings.
+     */
+    public function settings(): void
+    {
+        AuthMiddleware::requireAdmin();
+        $admin = Admin::find((int) $_SESSION['admin_id']);
+        view('admin/settings', [
+            'title' => __('admin.settings'),
+            'admin' => $admin,
+        ]);
+    }
+
+    /**
+     * Saves administrator settings.
+     */
+    public function settingsUpdate(): void
+    {
+        AuthMiddleware::requireAdmin();
+        $locale = (string) ($_POST['locale'] ?? default_locale());
+        if (!Csrf::verify() || !in_array($locale, supported_locales(), true)) {
+            flash('error', __('flash.invalid_action'));
+            redirect('/admin/settings');
+        }
+
+        Admin::updateLocale((int) $_SESSION['admin_id'], $locale);
+        $_SESSION['admin_locale'] = $locale;
+        app_locale($locale);
+        flash('success', __('flash.settings_saved'));
+        redirect('/admin/settings');
+    }
 
     /**
      * Shows the edit form for one link.

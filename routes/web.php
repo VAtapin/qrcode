@@ -51,6 +51,8 @@ $router->get('/admin/blocked', [AdminController::class, 'listBlocked']);
 $router->get('/admin/blacklist', [AdminController::class, 'blacklist']);
 $router->post('/admin/blacklist', [AdminController::class, 'blacklistAdd']);
 $router->post('/admin/blacklist/delete/{id}', [AdminController::class, 'blacklistDelete']);
+$router->get('/admin/settings', [AdminController::class, 'settings']);
+$router->post('/admin/settings', [AdminController::class, 'settingsUpdate']);
 $router->get('/admin/edit/{id}', [AdminController::class, 'edit']);
 $router->post('/admin/edit/{id}', [AdminController::class, 'update']);
 $router->post('/admin/status/{id}', [AdminController::class, 'status']);

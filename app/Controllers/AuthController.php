@@ -51,6 +51,10 @@ final class AuthController
         session_regenerate_id(true);
         $_SESSION['admin_id'] = (int) $admin['id'];
         $_SESSION['admin_login'] = $admin['login'];
+        $_SESSION['admin_locale'] = in_array($admin['locale'] ?? '', supported_locales(), true)
+            ? $admin['locale']
+            : default_locale();
+        app_locale((string) $_SESSION['admin_locale']);
         Admin::touchLogin((int) $admin['id']);
         redirect('/admin');
     }
