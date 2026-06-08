@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Database;
+use PDO;
 
 final class Link
 {
     public static function create(array $data): int
     {
-        $sql = 'INSERT INTO qr_links
-            (short_code, title, target_url, qr_color, status, comment, created_at, updated_at, created_ip_hash)
-            VALUES (:short_code, :title, :target_url, :qr_color, "pending", :comment, NOW(), NOW(), :created_ip_hash)';
-        $stmt = Database::pdo()->prepare($sql);
+        $stmt = Database::pdo()->prepare(
+            'INSERT INTO qr_links
+             (short_code, title, target_url, qr_color, status, is_public, submitter_email, comment, created_at, updated_at, approved_at, created_ip_hash)
+             VALUES (:short_code, :title, :target_url, :qr_color, :status, :is_public, :submitter_email, :comment, NOW(), NOW(), :approved_at, :created_ip_hash)'
+        );
         $stmt->execute($data);
         return (int) Database::pdo()->lastInsertId();
     }
@@ -38,6 +40,41 @@ final class Link
         return $stmt->fetch() ?: null;
     }
 
+    public static function gallery(string $search, string $filter, int $page, int $perPage): array
+    {
+        $where = ['status = "approved"', 'is_public = 1'];
+        $params = [];
+
+        if ($search !== '') {
+            $where[] = '(LOWER(title) LIKE :search OR LOWER(short_code) LIKE :search)';
+            $params['search'] = '%' . mb_strtolower($search) . '%';
+        }
+
+        $order = $filter === 'latest' ? 'created_at DESC' : 'title ASC, created_at DESC';
+        $whereSql = implode(' AND ', $where);
+
+        $count = Database::pdo()->prepare('SELECT COUNT(*) FROM qr_links WHERE ' . $whereSql);
+        $count->execute($params);
+        $total = (int) $count->fetchColumn();
+
+        $stmt = Database::pdo()->prepare(
+            'SELECT * FROM qr_links WHERE ' . $whereSql . ' ORDER BY ' . $order . ' LIMIT :limit OFFSET :offset'
+        );
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue('offset', max(0, ($page - 1) * $perPage), PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'items' => $stmt->fetchAll(),
+            'total' => $total,
+            'page' => $page,
+            'pages' => max(1, (int) ceil($total / $perPage)),
+        ];
+    }
+
     public static function codeExists(string $code, ?int $exceptId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM qr_links WHERE short_code = :code';
@@ -54,8 +91,13 @@ final class Link
     public static function listByStatus(string $status): array
     {
         $stmt = Database::pdo()->prepare(
-            'SELECT l.*, (SELECT COUNT(*) FROM qr_links d WHERE d.target_url = l.target_url AND d.id <> l.id) AS duplicates
-             FROM qr_links l WHERE l.status = :status ORDER BY l.created_at DESC'
+            'SELECT l.*,
+                    (SELECT COUNT(*) FROM qr_links d WHERE d.target_url = l.target_url AND d.id <> l.id) AS duplicates,
+                    (SELECT COUNT(*) FROM qr_clicks c WHERE c.link_id = l.id) AS click_count,
+                    (SELECT MAX(c.clicked_at) FROM qr_clicks c WHERE c.link_id = l.id) AS last_clicked_at
+             FROM qr_links l
+             WHERE l.status = :status
+             ORDER BY l.created_at DESC'
         );
         $stmt->execute(['status' => $status]);
         return $stmt->fetchAll();
@@ -94,14 +136,16 @@ final class Link
 
     public static function update(int $id, array $data): void
     {
-        $sql = 'UPDATE qr_links SET short_code = :short_code, title = :title, target_url = :target_url,
-                qr_color = :qr_color, comment = :comment, admin_note = :admin_note, updated_at = NOW()
-                WHERE id = :id';
-        $stmt = Database::pdo()->prepare($sql);
+        $stmt = Database::pdo()->prepare(
+            'UPDATE qr_links SET short_code = :short_code, title = :title, target_url = :target_url,
+                qr_color = :qr_color, is_public = :is_public, submitter_email = :submitter_email,
+                comment = :comment, admin_note = :admin_note, updated_at = NOW()
+             WHERE id = :id'
+        );
         $stmt->execute($data + ['id' => $id]);
     }
 
-    public static function setStatus(int $id, string $status): void
+    public static function setStatus(int $id, string $status): ?array
     {
         $fields = [
             'approved' => 'approved_at = NOW(), rejected_at = NULL',
@@ -109,9 +153,11 @@ final class Link
             'blocked' => 'updated_at = NOW()',
             'pending' => 'approved_at = NULL, rejected_at = NULL',
         ];
-        $sql = 'UPDATE qr_links SET status = :status, updated_at = NOW(), ' . $fields[$status] . ' WHERE id = :id';
-        $stmt = Database::pdo()->prepare($sql);
+        $stmt = Database::pdo()->prepare(
+            'UPDATE qr_links SET status = :status, updated_at = NOW(), ' . $fields[$status] . ' WHERE id = :id'
+        );
         $stmt->execute(['status' => $status, 'id' => $id]);
+        return self::find($id);
     }
 
     public static function delete(int $id): void

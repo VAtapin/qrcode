@@ -14,6 +14,8 @@ CREATE TABLE qr_links (
   qr_color CHAR(7) NOT NULL DEFAULT '#000000',
   qr_path VARCHAR(255) NULL,
   status ENUM('pending','approved','rejected','blocked') NOT NULL DEFAULT 'pending',
+  is_public TINYINT(1) NOT NULL DEFAULT 0,
+  submitter_email VARCHAR(190) NULL,
   comment TEXT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
@@ -22,10 +24,26 @@ CREATE TABLE qr_links (
   created_ip_hash CHAR(64) NOT NULL,
   admin_note TEXT NULL,
   INDEX idx_status_created (status, created_at),
+  INDEX idx_gallery (status, is_public, created_at),
   INDEX idx_short_code_status (short_code, status),
   INDEX idx_created_ip_time (created_ip_hash, created_at),
   INDEX idx_target_url (target_url(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE blacklist_words (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  word VARCHAR(50) NOT NULL UNIQUE,
+  created_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO blacklist_words (word, created_at) VALUES
+('admin', NOW()),
+('login', NOW()),
+('logout', NOW()),
+('api', NOW()),
+('config', NOW()),
+('root', NOW()),
+('system', NOW());
 
 CREATE TABLE qr_clicks (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

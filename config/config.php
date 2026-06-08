@@ -14,4 +14,14 @@ return [
         'user' => 'root',
         'password' => '',
     ],
+    'mail' => [
+        'from' => 'no-reply@example.com',
+        'smtp' => [
+            'host' => '',
+            'port' => 587,
+            'username' => '',
+            'password' => '',
+            'encryption' => 'tls',
+        ],
+    ],
 ];

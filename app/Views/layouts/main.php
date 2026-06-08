@@ -10,9 +10,11 @@
 <header class="topbar">
     <a class="brand" href="/">QR Moderation</a>
     <nav>
-        <a href="/">Новая ссылка</a>
+        <a href="/">Галерея</a>
+        <a href="/new">Новая ссылка</a>
         <?php if (!empty($_SESSION['admin_id'])): ?>
             <a href="/admin">Админка</a>
+            <a href="/admin/blacklist">Чёрный список</a>
             <form method="post" action="/logout" class="inline">
                 <?= \App\Core\Csrf::field() ?>
                 <button type="submit">Выйти</button>

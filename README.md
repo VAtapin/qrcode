@@ -1,62 +1,124 @@
 # QR Moderation
 
-PHP 8.2+ service for moderated short links and QR codes. New links are saved as `pending`; redirects work only after an administrator approves the record.
+PHP 8.2+ service for moderated short links and QR codes.
+
+The main page shows a public gallery of approved QR codes. New links are created on `/new`, receive a QR code immediately, and start redirecting only after approval.
+
+## Features
+
+- Public gallery on `/` with approved public QR codes only.
+- Search by title and short code with `/?search=solar`.
+- Quick filters: all, public, latest.
+- Pagination: 20 QR codes per page.
+- Public and private links through `is_public`.
+- Result page after creation with immediate QR download.
+- QR page on `/qr/{short_code}` for approved links.
+- Admin moderation: pending, approved, rejected, blocked.
+- Optional instant approval when an admin creates a link.
+- E-mail notifications after submission and approval.
+- SMTP settings with safe fallback to `storage/logs/mail.log`.
+- Editable short-code blacklist in `/admin/blacklist`.
+- Click statistics: count and last click date.
 
 ## Installation
 
-1. Run dependencies:
+1. Install dependencies:
 
    ```bash
-   composer install
+   composer install --no-dev --optimize-autoloader
    ```
 
 2. Edit `config/config.php`:
 
-   - set `app.base_url` to the public site URL
-   - set a long random `app.secret_salt`
-   - set the MySQL/MariaDB PDO DSN, user, and password
+   ```php
+   'app' => [
+       'base_url' => 'https://q-2.me',
+       'timezone' => 'Europe/Berlin',
+       'secret_salt' => 'change-this-long-random-secret',
+   ],
+   'db' => [
+       'dsn' => 'mysql:host=localhost;dbname=DB_NAME;charset=utf8mb4',
+       'user' => 'DB_USER',
+       'password' => 'DB_PASSWORD',
+   ],
+   ```
 
-3. Import the schema:
+3. Import the schema on a fresh install:
 
    ```bash
-   mysql -u root -p qrcode < database/schema.sql
+   mysql -u DB_USER -p DB_NAME < database/schema.sql
+   ```
+
+   For an existing installation, apply:
+
+   ```bash
+   mysql -u DB_USER -p DB_NAME < database/update_gallery_email_blacklist.sql
    ```
 
 4. Create the first administrator:
 
    ```bash
-   php database/create_admin.php admin password
+   php database/create_admin.php admin strong-password
    ```
 
-5. Set the web server document root to `/public`.
+5. Make storage writable:
 
-6. Make these directories writable by PHP:
+   ```bash
+   chmod -R 775 storage/qrcodes storage/logs
+   ```
 
-   - `storage/qrcodes`
-   - `storage/logs`
+6. Keep the document root on `public` when possible. If the host points to the project root, the root `.htaccess` forwards requests to `public/index.php` and blocks service folders.
 
-## Apache Example
+## SMTP
 
-If the project root is the virtual host directory, keep the root `.htaccess`; it forwards requests to `public/index.php` and blocks direct access to `app`, `config`, `database`, `vendor`, and `storage/logs`.
+If SMTP is configured, notifications are sent through it:
 
-Recommended virtual host:
-
-```apache
-<VirtualHost *:80>
-    ServerName qrcode.local
-    DocumentRoot /path/to/qrcode/public
-
-    <Directory /path/to/qrcode/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
+```php
+'mail' => [
+    'from' => 'no-reply@q-2.me',
+    'smtp' => [
+        'host' => 'smtp.example.com',
+        'port' => 587,
+        'username' => 'smtp-user',
+        'password' => 'smtp-password',
+        'encryption' => 'tls',
+    ],
+],
 ```
 
-## Checks
+If SMTP is empty or sending fails, the message is written to:
 
-- All database work uses PDO prepared statements.
-- All forms include CSRF tokens.
-- User output is escaped with `htmlspecialchars`.
-- URL validation allows only `http` and `https`, blocks localhost and private/internal IP ranges.
-- QR PNG files are generated into `storage/qrcodes` and point to the short URL, not the original target URL.
+```text
+storage/logs/mail.log
+```
+
+The application does not fail because of mail delivery problems.
+
+## Public Gallery
+
+Only links with these values are shown:
+
+```text
+status = approved
+is_public = 1
+```
+
+Private approved links still redirect by short code, but do not appear in the gallery.
+
+## QR Downloads
+
+- Result page: `/result/{short_code}`
+- Approved QR page: `/qr/{short_code}`
+- Download QR: `/qr/{short_code}/download`
+
+QR download is available immediately after creation.
+
+## Blacklist
+
+Admins can manage forbidden short codes at:
+
+```text
+/admin/blacklist
+```
+
+The initial schema seeds examples such as `admin`, `login`, `logout`, `api`, `config`, `root`, and `system`.

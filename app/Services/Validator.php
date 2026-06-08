@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\BlacklistWord;
+
 final class Validator
 {
-    private const RESERVED_CODES = [
-        'admin', 'login', 'logout', 'api', 'user', 'users', 'config', 'setup', 'install',
-        'delete', 'edit', 'approve', 'reject', 'block', 'qr', 'qrcode', 'css', 'js', 'img',
-        'images', 'assets', 'class', 'incl', 'vendor', 'index', 'home', 'root', 'system',
-        'phpmyadmin', 'mysql', 'backup', 'test', 'debug',
-    ];
-
     public static function title(string $title): ?string
     {
         $length = mb_strlen(trim($title));
@@ -51,7 +46,7 @@ final class Validator
             return 'Короткий код должен содержать 3-50 символов: a-z, A-Z, 0-9, * или _.';
         }
 
-        if (in_array(strtolower($code), self::RESERVED_CODES, true)) {
+        if (BlacklistWord::isBlocked($code)) {
             return 'Этот короткий код зарезервирован.';
         }
 

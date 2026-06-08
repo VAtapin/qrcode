@@ -12,6 +12,7 @@
                 <th>Название</th>
                 <th>URL</th>
                 <th>QR</th>
+                <th>Переходы</th>
                 <th>Действия</th>
             </tr>
             </thead>
@@ -25,11 +26,20 @@
                         <?php if ((int) $link['duplicates'] > 0): ?>
                             <span class="badge">дубликат URL</span>
                         <?php endif; ?>
+                        <?php if ((int) $link['is_public'] === 1): ?>
+                            <span class="badge green">публичная</span>
+                        <?php endif; ?>
                     </td>
                     <td><a href="<?= e($link['target_url']) ?>" rel="noreferrer" target="_blank"><?= e($link['target_url']) ?></a></td>
                     <td><?php if (!empty($link['qr_path'])): ?><img class="qr" src="/storage/<?= e($link['qr_path']) ?>" alt="QR"><?php endif; ?></td>
+                    <td>
+                        <?= e((string) $link['click_count']) ?><br>
+                        <span class="muted"><?= e($link['last_clicked_at'] ?: 'нет переходов') ?></span>
+                    </td>
                     <td class="actions">
                         <a href="/admin/edit/<?= e((string) $link['id']) ?>">Редактировать</a>
+                        <a href="/qr/<?= e($link['short_code']) ?>">Открыть страницу QR</a>
+                        <a href="/qr/<?= e($link['short_code']) ?>/download">Скачать QR</a>
                         <?php foreach (['approved' => 'Одобрить', 'rejected' => 'Отклонить', 'blocked' => 'Блокировать'] as $next => $label): ?>
                             <?php if ($status !== $next): ?>
                                 <form method="post" action="/admin/status/<?= e((string) $link['id']) ?>">
@@ -43,7 +53,7 @@
                 </tr>
             <?php endforeach; ?>
             <?php if ($links === []): ?>
-                <tr><td colspan="6" class="empty">Записей нет</td></tr>
+                <tr><td colspan="7" class="empty">Записей нет</td></tr>
             <?php endif; ?>
             </tbody>
         </table>
