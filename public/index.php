@@ -30,4 +30,5 @@ $path = $_SERVER['REDIRECT_APP_REQUEST_PATH']
     ?: '/';
 $path = '/' . ltrim((string) $path, '/');
 $path = preg_replace('#^/public/index\.php#', '', $path) ?: '/';
+app_locale(detect_locale($path));
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $path);

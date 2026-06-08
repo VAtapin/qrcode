@@ -31,6 +31,118 @@ function config(string $key, mixed $default = null): mixed
 }
 
 /**
+ * Returns all supported interface locales.
+ *
+ * @return array<int, string>
+ */
+function supported_locales(): array
+{
+    return config('app.locales', ['de', 'ru', 'en']);
+}
+
+/**
+ * Returns the configured default interface locale.
+ */
+function default_locale(): string
+{
+    return config('app.default_locale', 'de');
+}
+
+/**
+ * Returns or sets the active interface locale.
+ */
+function app_locale(?string $locale = null, bool $persist = true): string
+{
+    static $current;
+
+    if ($locale !== null) {
+        $current = in_array($locale, supported_locales(), true) ? $locale : default_locale();
+        $_SESSION['_locale'] = $current;
+        if ($persist && !headers_sent()) {
+            setcookie('locale', $current, [
+                'expires' => time() + 31536000,
+                'path' => '/',
+                'secure' => !empty($_SERVER['HTTPS']),
+                'httponly' => false,
+                'samesite' => 'Lax',
+            ]);
+        }
+    }
+
+    if ($current === null) {
+        $current = $_SESSION['_locale'] ?? default_locale();
+    }
+
+    return $current;
+}
+
+/**
+ * Detects the preferred locale from URL, cookie, browser headers, or default settings.
+ */
+function detect_locale(string $path): string
+{
+    $firstSegment = explode('/', trim($path, '/'))[0] ?? '';
+    if (in_array($firstSegment, supported_locales(), true)) {
+        return $firstSegment;
+    }
+
+    $cookieLocale = $_COOKIE['locale'] ?? '';
+    if (is_string($cookieLocale) && in_array($cookieLocale, supported_locales(), true)) {
+        return $cookieLocale;
+    }
+
+    $accepted = strtolower((string) ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
+    foreach (explode(',', $accepted) as $candidate) {
+        $locale = substr(trim($candidate), 0, 2);
+        if (in_array($locale, supported_locales(), true)) {
+            return $locale;
+        }
+    }
+
+    return default_locale();
+}
+
+/**
+ * Translates an interface string.
+ *
+ * @param array<string, string|int|float> $replace Placeholder replacements.
+ */
+function __(string $key, array $replace = [], ?string $locale = null): string
+{
+    static $catalogs = [];
+
+    $locale ??= app_locale();
+    if (!isset($catalogs[$locale])) {
+        $file = dirname(__DIR__) . '/app/Lang/' . $locale . '.php';
+        $catalogs[$locale] = is_file($file) ? require $file : [];
+    }
+
+    $defaultLocale = default_locale();
+    if (!isset($catalogs[$defaultLocale])) {
+        $file = dirname(__DIR__) . '/app/Lang/' . $defaultLocale . '.php';
+        $catalogs[$defaultLocale] = is_file($file) ? require $file : [];
+    }
+
+    $line = $catalogs[$locale][$key] ?? $catalogs[$defaultLocale][$key] ?? $key;
+    foreach ($replace as $name => $value) {
+        $line = str_replace(':' . $name, (string) $value, $line);
+    }
+
+    return $line;
+}
+
+/**
+ * Builds a localized public path.
+ */
+function localized_path(string $path = '', ?string $locale = null): string
+{
+    $locale ??= app_locale();
+    $path = trim($path, '/');
+
+    return '/' . $locale . ($path !== '' ? '/' . $path : '');
+}
+
+/**
  * Escapes a value for safe HTML output.
  */
 function e(?string $value): string

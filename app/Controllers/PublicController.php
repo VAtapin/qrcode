@@ -41,7 +41,7 @@ final class PublicController
         $gallery = Link::gallery($search, $filter, $page, $perPage, $isAdmin);
 
         view('public/gallery', [
-            'title' => 'Галерея QR-кодов',
+            'title' => __('nav.gallery'),
             'items' => $gallery['items'],
             'total' => $gallery['total'],
             'page' => $gallery['page'],
@@ -57,7 +57,7 @@ final class PublicController
      */
     public function create(): void
     {
-        view('public/create', ['title' => 'Создать короткую ссылку']);
+        view('public/create', ['title' => __('create.title')]);
     }
 
     /**
@@ -81,8 +81,13 @@ final class PublicController
      */
     public function store(): void
     {
+        $submittedLocale = (string) ($_POST['locale'] ?? '');
+        if (in_array($submittedLocale, supported_locales(), true)) {
+            app_locale($submittedLocale, false);
+        }
+
         if (!Csrf::verify()) {
-            $this->validationError('Сессия устарела. Обновите страницу и отправьте форму снова.');
+            $this->validationError(__('error.session_expired'));
         }
 
         $isAdmin = !empty($_SESSION['admin_id']);
@@ -111,22 +116,22 @@ final class PublicController
             $errors[] = $error;
         }
         if (!$isAdmin && !filter_var($submitterEmail, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Укажите корректный e-mail.';
+            $errors[] = __('error.email_required');
         }
         if (!$agree) {
-            $errors[] = 'Нужно согласиться с правилами сервиса.';
+            $errors[] = __('error.agree_required');
         }
         if (Link::codeExists($shortCode)) {
-            $errors[] = 'Этот короткий код уже занят.';
+            $errors[] = __('error.code_exists');
         }
         if (!$isAdmin && ($honeypot !== '' || RateLimiter::formWasSubmittedTooFast($startedAt))) {
-            $errors[] = 'Не удалось отправить форму. Попробуйте позже.';
+            $errors[] = __('error.form_rejected');
         }
         if (!$isAdmin && RateLimiter::tooManySubmissions($ipHash)) {
-            $errors[] = 'Слишком много заявок. Попробуйте позже.';
+            $errors[] = __('error.too_many');
         }
         if (!$isAdmin && RateLimiter::tooManyDailySubmissions($ipHash)) {
-            $errors[] = 'Достигнут суточный лимит заявок. Попробуйте завтра.';
+            $errors[] = __('error.daily_limit');
         }
 
         if ($errors !== []) {
@@ -142,6 +147,7 @@ final class PublicController
             'status' => $status,
             'is_public' => $isPublic,
             'submitter_email' => $submitterEmail !== '' ? $submitterEmail : null,
+            'locale' => app_locale(),
             'comment' => $comment !== '' ? $comment : null,
             'approved_at' => $approveNow ? date('Y-m-d H:i:s') : null,
             'created_ip_hash' => $ipHash,
@@ -157,7 +163,7 @@ final class PublicController
             $mailer->sendAdminNewLink($link);
         }
 
-        redirect('/result/' . $shortCode);
+        redirect(localized_path('result/' . $shortCode));
     }
 
     /**
@@ -170,11 +176,11 @@ final class PublicController
         $link = Link::findByCode($code);
         if ($link === null) {
             http_response_code(404);
-            view('errors/message', ['title' => 'Ссылка не найдена', 'message' => 'Такого короткого кода нет.']);
+            view('errors/message', ['title' => __('error.link_not_found'), 'message' => __('error.code_not_found')]);
             return;
         }
 
-        view('public/result', ['title' => 'QR-код создан', 'link' => $link]);
+        view('public/result', ['title' => __('result.title'), 'link' => $link]);
     }
 
     /**
@@ -187,13 +193,13 @@ final class PublicController
         $link = Link::findByCode($code);
         if ($link === null) {
             http_response_code(404);
-            view('errors/message', ['title' => 'Ссылка не найдена', 'message' => 'Такого короткого кода нет.']);
+            view('errors/message', ['title' => __('error.link_not_found'), 'message' => __('error.code_not_found')]);
             return;
         }
 
         if ($link['status'] !== 'approved') {
             http_response_code(403);
-            view('errors/message', ['title' => 'QR-код недоступен', 'message' => 'QR-код будет доступен после одобрения ссылки.']);
+            view('errors/message', ['title' => __('error.qr_unavailable'), 'message' => __('error.qr_after_approval')]);
             return;
         }
 
@@ -235,18 +241,18 @@ final class PublicController
         $link = Link::findByCode($code);
         if ($link === null) {
             http_response_code(404);
-            view('errors/message', ['title' => 'Ссылка не найдена', 'message' => 'Такого короткого кода нет.']);
+            view('errors/message', ['title' => __('error.link_not_found'), 'message' => __('error.code_not_found')]);
             return;
         }
 
         if ($link['status'] !== 'approved') {
             http_response_code(403);
             $messages = [
-                'pending' => ['Ссылка на модерации', 'Администратор еще проверяет эту ссылку.'],
-                'rejected' => ['Ссылка отклонена', 'Эта ссылка не прошла модерацию.'],
-                'blocked' => ['Ссылка заблокирована', 'Переход по этой ссылке заблокирован.'],
+                'pending' => [__('error.redirect_pending_title'), __('error.redirect_pending_message')],
+                'rejected' => [__('error.redirect_rejected_title'), __('error.redirect_rejected_message')],
+                'blocked' => [__('error.redirect_blocked_title'), __('error.redirect_blocked_message')],
             ];
-            [$title, $message] = $messages[$link['status']] ?? ['Переход недоступен', 'Ссылка сейчас недоступна.'];
+            [$title, $message] = $messages[$link['status']] ?? [__('error.redirect_unavailable_title'), __('error.redirect_unavailable_message')];
             view('errors/message', ['title' => $title, 'message' => $message]);
             return;
         }
@@ -307,7 +313,7 @@ final class PublicController
     {
         http_response_code(422);
         view('public/create', [
-            'title' => 'Ошибка валидации',
+            'title' => __('error.validation_title'),
             'error' => $message,
             'old' => $old,
         ]);

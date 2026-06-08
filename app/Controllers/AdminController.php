@@ -35,7 +35,7 @@ final class AdminController
     public function dashboard(): void
     {
         AuthMiddleware::requireAdmin();
-        view('admin/dashboard', ['title' => 'Админка', 'stats' => Link::stats()]);
+        view('admin/dashboard', ['title' => __('admin.dashboard'), 'stats' => Link::stats()]);
     }
 
     /** Shows pending links. */
@@ -58,10 +58,10 @@ final class AdminController
         $link = Link::find((int) $id);
         if ($link === null) {
             http_response_code(404);
-            view('errors/message', ['title' => 'Ссылка не найдена', 'message' => 'Запись отсутствует.']);
+            view('errors/message', ['title' => __('error.link_not_found'), 'message' => __('error.code_not_found')]);
             return;
         }
-        view('admin/edit', ['title' => 'Редактирование', 'link' => $link]);
+        view('admin/edit', ['title' => __('button.edit'), 'link' => $link]);
     }
 
     /**
@@ -75,7 +75,7 @@ final class AdminController
         $returnTo = $this->safeReturnTo('/admin/edit/' . (int) $id);
         $link = Link::find((int) $id);
         if ($link === null || !Csrf::verify()) {
-            flash('error', 'Не удалось сохранить изменения.');
+            flash('error', __('flash.save_failed'));
             redirect($returnTo);
         }
 
@@ -91,7 +91,7 @@ final class AdminController
         ];
 
         $emailError = $data['submitter_email'] !== null && !filter_var($data['submitter_email'], FILTER_VALIDATE_EMAIL)
-            ? 'E-mail имеет неверный формат.'
+            ? __('flash.email_invalid')
             : null;
 
         $errors = array_filter([
@@ -100,7 +100,7 @@ final class AdminController
             Validator::url($data['target_url']),
             Validator::color($data['qr_color']),
             $emailError,
-            Link::codeExists($data['short_code'], (int) $id) ? 'Этот короткий код уже занят.' : null,
+            Link::codeExists($data['short_code'], (int) $id) ? __('error.code_exists') : null,
         ]);
 
         if ($errors !== []) {
@@ -115,7 +115,7 @@ final class AdminController
             (new MailService())->sendLinkUpdated($updatedLink);
         }
         AdminLog::write((int) $_SESSION['admin_id'], 'updated', (int) $id);
-        flash('success', 'Изменения сохранены.');
+        flash('success', __('flash.saved'));
         redirect($returnTo);
     }
 
@@ -130,7 +130,7 @@ final class AdminController
         $returnTo = $this->safeReturnTo('/admin');
         $status = (string) ($_POST['status'] ?? '');
         if (!Csrf::verify() || !in_array($status, self::STATUSES, true)) {
-            flash('error', 'Некорректное действие.');
+            flash('error', __('flash.invalid_action'));
             redirect($returnTo);
         }
 
@@ -141,7 +141,7 @@ final class AdminController
             (new MailService())->sendLinkStatusChanged($link, $status);
         }
 
-        flash('success', 'Статус обновлен.');
+        flash('success', __('flash.status_updated'));
         redirect($returnTo);
     }
 
@@ -155,7 +155,7 @@ final class AdminController
         AuthMiddleware::requireAdmin();
         $returnTo = $this->safeReturnTo('/admin');
         if (!Csrf::verify()) {
-            flash('error', 'Некорректный CSRF-токен.');
+            flash('error', __('flash.invalid_csrf'));
             redirect($returnTo);
         }
 
@@ -165,7 +165,7 @@ final class AdminController
         }
         AdminLog::write((int) $_SESSION['admin_id'], 'deleted', null);
         Link::delete((int) $id);
-        flash('success', 'Запись удалена.');
+        flash('success', __('flash.deleted'));
         redirect($returnTo);
     }
 
@@ -176,7 +176,7 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         view('admin/blacklist', [
-            'title' => 'Чёрный список',
+            'title' => __('blacklist.title'),
             'words' => BlacklistWord::all(),
         ]);
     }
@@ -189,12 +189,12 @@ final class AdminController
         AuthMiddleware::requireAdmin();
         $word = trim((string) ($_POST['word'] ?? ''));
         if (!Csrf::verify() || !preg_match('/^[A-Za-z0-9*_]{3,50}$/', $word)) {
-            flash('error', 'Слово должно быть коротким кодом длиной 3-50 символов.');
+            flash('error', __('flash.blacklist_invalid'));
             redirect('/admin/blacklist');
         }
 
         BlacklistWord::add($word);
-        flash('success', 'Слово добавлено.');
+        flash('success', __('flash.blacklist_added'));
         redirect('/admin/blacklist');
     }
 
@@ -207,12 +207,12 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         if (!Csrf::verify()) {
-            flash('error', 'Некорректный CSRF-токен.');
+            flash('error', __('flash.invalid_csrf'));
             redirect('/admin/blacklist');
         }
 
         BlacklistWord::delete((int) $id);
-        flash('success', 'Слово удалено.');
+        flash('success', __('flash.blacklist_deleted'));
         redirect('/admin/blacklist');
     }
 
@@ -225,7 +225,7 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         view('admin/list', [
-            'title' => ucfirst($status),
+            'title' => __('admin.' . $status),
             'status' => $status,
             'links' => Link::listByStatus($status),
         ]);

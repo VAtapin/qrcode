@@ -77,8 +77,8 @@ final class Router
 
         http_response_code(404);
         view('errors/message', [
-            'title' => 'Ссылка не найдена',
-            'message' => 'Проверьте адрес или создайте новую короткую ссылку.',
+            'title' => __('error.link_not_found'),
+            'message' => __('error.code_not_found'),
         ]);
     }
 }

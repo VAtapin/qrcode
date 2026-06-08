@@ -17,6 +17,8 @@ return [
         'base_url' => 'https://q-2.me',
         'timezone' => 'UTC',
         'secret_salt' => 'change-this-long-random-secret',
+        'default_locale' => 'de',
+        'locales' => ['de', 'ru', 'en'],
     ],
     'db' => [
         'dsn' => 'mysql:host=127.0.0.1;dbname=qrcode;charset=utf8mb4',

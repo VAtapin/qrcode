@@ -26,7 +26,7 @@ final class AuthController
      */
     public function showLogin(): void
     {
-        view('auth/login', ['title' => 'Вход администратора']);
+        view('auth/login', ['title' => __('auth.login_title')]);
     }
 
     /**
@@ -35,7 +35,7 @@ final class AuthController
     public function login(): void
     {
         if (!Csrf::verify()) {
-            flash('error', 'Сессия устарела. Попробуйте снова.');
+            flash('error', __('flash.login_expired'));
             redirect('/login');
         }
 
@@ -44,7 +44,7 @@ final class AuthController
         $admin = Admin::findByLogin($login);
 
         if ($admin === null || !password_verify($password, $admin['password_hash'])) {
-            flash('error', 'Неверный логин или пароль.');
+            flash('error', __('flash.login_invalid'));
             redirect('/login');
         }
 

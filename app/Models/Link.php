@@ -30,8 +30,8 @@ final class Link
     {
         $stmt = Database::pdo()->prepare(
             'INSERT INTO qr_links
-             (short_code, title, target_url, qr_color, status, is_public, submitter_email, comment, created_at, updated_at, approved_at, created_ip_hash)
-             VALUES (:short_code, :title, :target_url, :qr_color, :status, :is_public, :submitter_email, :comment, NOW(), NOW(), :approved_at, :created_ip_hash)'
+             (short_code, title, target_url, qr_color, status, is_public, submitter_email, locale, comment, created_at, updated_at, approved_at, created_ip_hash)
+             VALUES (:short_code, :title, :target_url, :qr_color, :status, :is_public, :submitter_email, :locale, :comment, NOW(), NOW(), :approved_at, :created_ip_hash)'
         );
         $stmt->execute($data);
         return (int) Database::pdo()->lastInsertId();

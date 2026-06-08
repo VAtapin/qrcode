@@ -1,19 +1,19 @@
 <section class="panel wide">
     <div class="heading-row">
         <h1><?= e($title) ?></h1>
-        <a href="/admin">К статистике</a>
+        <a href="/admin"><?= e(__('admin.to_stats')) ?></a>
     </div>
     <div class="table-wrap">
         <table class="admin-table">
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Код</th>
-                <th>Название</th>
-                <th>URL</th>
-                <th>QR</th>
-                <th>Переходы</th>
-                <th>Действия</th>
+                <th><?= e(__('admin.code')) ?></th>
+                <th><?= e(__('admin.title')) ?></th>
+                <th><?= e(__('admin.url')) ?></th>
+                <th><?= e(__('admin.qr')) ?></th>
+                <th><?= e(__('admin.clicks')) ?></th>
+                <th><?= e(__('admin.actions')) ?></th>
             </tr>
             </thead>
             <tbody>
@@ -24,12 +24,12 @@
                     <td class="wrap-cell">
                         <?= e($link['title']) ?>
                         <?php if ((int) $link['duplicates'] > 0): ?>
-                            <span class="badge">дубликат URL</span>
+                            <span class="badge"><?= e(__('admin.duplicate_url')) ?></span>
                         <?php endif; ?>
                         <?php if ((int) $link['is_public'] === 1): ?>
-                            <span class="badge green">публичная</span>
+                            <span class="badge green"><?= e(__('gallery.badge_public')) ?></span>
                         <?php else: ?>
-                            <span class="badge">приватная</span>
+                            <span class="badge"><?= e(__('gallery.badge_private')) ?></span>
                         <?php endif; ?>
                     </td>
                     <td class="url-cell">
@@ -38,13 +38,13 @@
                     <td><?php if (!empty($link['qr_path'])): ?><img class="qr" src="/storage/<?= e($link['qr_path']) ?>" alt="QR"><?php endif; ?></td>
                     <td>
                         <?= e((string) $link['click_count']) ?><br>
-                        <span class="muted"><?= e($link['last_clicked_at'] ?: 'нет переходов') ?></span>
+                        <span class="muted"><?= e($link['last_clicked_at'] ?: __('admin.no_clicks')) ?></span>
                     </td>
                     <td class="actions">
-                        <a href="/admin/edit/<?= e((string) $link['id']) ?>">Редактировать</a>
-                        <a href="/qr/<?= e($link['short_code']) ?>">Открыть страницу QR</a>
-                        <a href="/qr/<?= e($link['short_code']) ?>/download">Скачать QR</a>
-                        <?php foreach (['approved' => 'Одобрить', 'rejected' => 'Отклонить', 'blocked' => 'Блокировать'] as $next => $label): ?>
+                        <a href="/admin/edit/<?= e((string) $link['id']) ?>"><?= e(__('button.edit')) ?></a>
+                        <a href="<?= e(localized_path('qr/' . $link['short_code'])) ?>"><?= e(__('button.open_qr_page')) ?></a>
+                        <a href="<?= e(localized_path('qr/' . $link['short_code'] . '/download')) ?>"><?= e(__('button.download_qr')) ?></a>
+                        <?php foreach (['approved' => __('admin.approve'), 'rejected' => __('admin.reject'), 'blocked' => __('admin.block')] as $next => $label): ?>
                             <?php if ($status !== $next): ?>
                                 <form method="post" action="/admin/status/<?= e((string) $link['id']) ?>">
                                     <?= \App\Core\Csrf::field() ?>
@@ -54,16 +54,16 @@
                                 </form>
                             <?php endif; ?>
                         <?php endforeach; ?>
-                        <form method="post" action="/admin/delete/<?= e((string) $link['id']) ?>" onsubmit="return confirm('Удалить запись и QR-код?')">
+                        <form method="post" action="/admin/delete/<?= e((string) $link['id']) ?>" onsubmit="return confirm('<?= e(__('admin.delete_confirm')) ?>')">
                             <?= \App\Core\Csrf::field() ?>
                             <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? ('/admin/' . $status)) ?>">
-                            <button type="submit" class="danger">Удалить</button>
+                            <button type="submit" class="danger"><?= e(__('button.delete')) ?></button>
                         </form>
                     </td>
                 </tr>
             <?php endforeach; ?>
             <?php if ($links === []): ?>
-                <tr><td colspan="7" class="empty">Записей нет</td></tr>
+                <tr><td colspan="7" class="empty"><?= e(__('admin.no_records')) ?></td></tr>
             <?php endif; ?>
             </tbody>
         </table>

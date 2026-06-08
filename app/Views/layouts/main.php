@@ -13,22 +13,27 @@
         <img src="/assets/logo.svg" alt="" class="brand-logo" width="44" height="44">
         <span class="brand-copy">
             <span>Q to me</span>
-            <small>QR ко мне · q-2.me</small>
+            <small><?= e(__('brand.tagline')) ?></small>
         </span>
     </a>
     <nav>
-        <a href="/">Галерея</a>
-        <a href="/new">Новая ссылка</a>
+        <a href="<?= e(localized_path()) ?>"><?= e(__('nav.gallery')) ?></a>
+        <a href="<?= e(localized_path('new')) ?>"><?= e(__('nav.new_link')) ?></a>
         <?php if (!empty($_SESSION['admin_id'])): ?>
-            <a href="/admin">Админка</a>
-            <a href="/admin/blacklist">Чёрный список</a>
+            <a href="/admin"><?= e(__('nav.admin')) ?></a>
+            <a href="/admin/blacklist"><?= e(__('nav.blacklist')) ?></a>
             <form method="post" action="/logout" class="inline">
                 <?= \App\Core\Csrf::field() ?>
-                <button type="submit">Выйти</button>
+                <button type="submit"><?= e(__('nav.logout')) ?></button>
             </form>
         <?php else: ?>
-            <a href="/login">Войти</a>
+            <a href="/login"><?= e(__('nav.login')) ?></a>
         <?php endif; ?>
+        <span class="lang-switch">
+            <?php foreach (supported_locales() as $locale): ?>
+                <a class="<?= app_locale() === $locale ? 'active' : '' ?>" href="<?= e(localized_path('', $locale)) ?>"><?= e(strtoupper($locale)) ?></a>
+            <?php endforeach; ?>
+        </span>
     </nav>
 </header>
 <main class="container">
@@ -39,8 +44,8 @@
 </main>
 <footer class="site-footer">
     <span>&copy; <?= date('Y') ?> Q to me</span>
-    <span>Изготовитель: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a></span>
-    <span><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></span>
+    <span><?= e(__('footer.maker')) ?>: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a></span>
+    <span><a href="<?= e(localized_path('impressum')) ?>">Impressum</a> · <a href="<?= e(localized_path('datenschutz')) ?>"><?= e(__('privacy.title')) ?></a></span>
 </footer>
 </body>
 </html>

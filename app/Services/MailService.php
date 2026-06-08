@@ -40,11 +40,12 @@ final class MailService
             return;
         }
 
+        $this->withLinkLocale($link, function () use ($link): void {
         $status = (string) ($link['status'] ?? 'pending');
-        $subject = $status === 'approved' ? 'QR-код одобрен' : 'QR-код ожидает модерации';
+        $subject = $status === 'approved' ? __('mail.submitted_approved_subject') : __('mail.submitted_subject');
         $lead = $status === 'approved'
-            ? 'Ссылка уже одобрена и короткий адрес работает.'
-            : 'Заявка создана. Администратор проверит ссылку, после этого короткий адрес начнет работать.';
+            ? __('mail.submitted_approved_lead')
+            : __('mail.submitted_lead');
 
         $this->sendLinkMail(
             (string) $link['submitter_email'],
@@ -52,10 +53,11 @@ final class MailService
             $lead,
             $link,
             $status === 'approved'
-                ? ['Открыть короткую ссылку' => url((string) $link['short_code']), 'Скачать QR' => url('qr/' . $link['short_code'] . '/download')]
-                : ['Скачать QR' => url('qr/' . $link['short_code'] . '/download')],
-            'Письмо создано автоматически сервисом Q to me.'
+                ? [__('mail.button_open_short') => url((string) $link['short_code']), __('mail.button_download_qr') => url(localized_path('qr/' . $link['short_code'] . '/download'))]
+                : [__('mail.button_download_qr') => url(localized_path('qr/' . $link['short_code'] . '/download'))],
+            __('mail.auto_note')
         );
+        });
     }
 
     /**
@@ -69,30 +71,32 @@ final class MailService
             return;
         }
 
+        $this->withLinkLocale($link, function () use ($link, $status): void {
         $subjects = [
-            'pending' => 'QR-код снова ожидает модерации',
-            'approved' => 'QR-код одобрен',
-            'rejected' => 'QR-код отклонен',
-            'blocked' => 'QR-код заблокирован',
+            'pending' => __('mail.status_pending_subject'),
+            'approved' => __('mail.status_approved_subject'),
+            'rejected' => __('mail.status_rejected_subject'),
+            'blocked' => __('mail.status_blocked_subject'),
         ];
         $leads = [
-            'pending' => 'Ссылка возвращена на проверку. Короткий адрес временно недоступен.',
-            'approved' => 'Ссылка одобрена. Короткий адрес и страница QR-кода уже работают.',
-            'rejected' => 'Ссылка не прошла модерацию. Короткий адрес недоступен.',
-            'blocked' => 'Ссылка заблокирована администратором. Переход по короткому адресу недоступен.',
+            'pending' => __('mail.status_pending_lead'),
+            'approved' => __('mail.status_approved_lead'),
+            'rejected' => __('mail.status_rejected_lead'),
+            'blocked' => __('mail.status_blocked_lead'),
         ];
 
         $buttons = $status === 'approved'
-            ? ['Открыть короткую ссылку' => url((string) $link['short_code']), 'Страница QR' => url('qr/' . $link['short_code']), 'Скачать QR' => url('qr/' . $link['short_code'] . '/download')]
-            : ['Скачать QR' => url('qr/' . $link['short_code'] . '/download')];
+            ? [__('mail.button_open_short') => url((string) $link['short_code']), __('mail.button_qr_page') => url(localized_path('qr/' . $link['short_code'])), __('mail.button_download_qr') => url(localized_path('qr/' . $link['short_code'] . '/download'))]
+            : [__('mail.button_download_qr') => url(localized_path('qr/' . $link['short_code'] . '/download'))];
 
         $this->sendLinkMail(
             (string) $link['submitter_email'],
-            $subjects[$status] ?? 'Статус QR-кода изменен',
-            $leads[$status] ?? 'Статус ссылки изменен администратором.',
+            $subjects[$status] ?? __('mail.status_pending_subject'),
+            $leads[$status] ?? __('mail.status_pending_lead'),
             $link,
             $buttons
         );
+        });
     }
 
     /**
@@ -106,13 +110,15 @@ final class MailService
             return;
         }
 
+        $this->withLinkLocale($link, function () use ($link): void {
         $this->sendLinkMail(
             (string) $link['submitter_email'],
-            'QR-код обновлен',
-            'Администратор обновил данные вашей ссылки.',
+            __('mail.updated_subject'),
+            __('mail.updated_lead'),
             $link,
-            ['Страница результата' => url('result/' . $link['short_code']), 'Скачать QR' => url('qr/' . $link['short_code'] . '/download')]
+            [__('mail.button_result') => url(localized_path('result/' . $link['short_code'])), __('mail.button_download_qr') => url(localized_path('qr/' . $link['short_code'] . '/download'))]
         );
+        });
     }
 
     /**
@@ -126,15 +132,17 @@ final class MailService
             return;
         }
 
+        $this->withLinkLocale($link, function () use ($link): void {
         $this->sendLinkMail(
             (string) $link['submitter_email'],
-            'QR-код удален',
-            'Администратор удалил ссылку и QR-код из сервиса.',
+            __('mail.deleted_subject'),
+            __('mail.deleted_lead'),
             $link,
             [],
-            'Если вы считаете, что это ошибка, ответьте на это письмо.',
+            __('mail.deleted_note'),
             false
         );
+        });
     }
 
     /**
@@ -149,14 +157,16 @@ final class MailService
             return;
         }
 
+        $this->withLinkLocale($link, function () use ($link, $adminEmail): void {
         $this->sendLinkMail(
             $adminEmail,
-            'Создан новый QR-код',
-            'В сервисе создана новая ссылка. Проверьте ее в админке.',
+            __('mail.admin_new_subject'),
+            __('mail.admin_new_lead'),
             $link,
-            ['Открыть в админке' => url('admin/edit/' . $link['id']), 'Страница результата' => url('result/' . $link['short_code'])],
-            'Это уведомление для администратора.'
+            [__('mail.button_admin') => url('admin/edit/' . $link['id']), __('mail.button_result') => url(localized_path('result/' . $link['short_code']))],
+            __('mail.admin_note')
         );
+        });
     }
 
     /**
@@ -170,23 +180,23 @@ final class MailService
         $shortCode = (string) ($link['short_code'] ?? '');
         $status = (string) ($link['status'] ?? '');
         $rows = [
-            'Название' => (string) ($link['title'] ?? ''),
-            'Короткий код' => $shortCode,
-            'Статус' => $status,
-            'Страница результата' => url('result/' . $shortCode),
+            __('mail.row_title') => (string) ($link['title'] ?? ''),
+            __('mail.row_short_code') => $shortCode,
+            __('mail.row_status') => $status,
+            __('mail.row_result') => url(localized_path('result/' . $shortCode)),
         ];
 
         if ($status === 'approved') {
-            $rows['Короткая ссылка'] = url($shortCode);
-            $rows['Страница QR'] = url('qr/' . $shortCode);
+            $rows[__('mail.row_short_link')] = url($shortCode);
+            $rows[__('mail.row_qr_page')] = url(localized_path('qr/' . $shortCode));
         }
 
         if ($includeDownload) {
-            $rows['Скачать QR'] = url('qr/' . $shortCode . '/download');
+            $rows[__('mail.row_download')] = url(localized_path('qr/' . $shortCode . '/download'));
         }
 
         if (!empty($link['target_url'])) {
-            $rows['Оригинальный URL'] = (string) $link['target_url'];
+            $rows[__('mail.row_original_url')] = (string) $link['target_url'];
         }
 
         $qrPath = !empty($link['qr_path']) ? STORAGE_PATH . '/' . $link['qr_path'] : null;
@@ -195,6 +205,23 @@ final class MailService
         $text = $this->renderText($lead, $rows, $buttons, $note);
 
         $this->sendMessage($to, $subject, $text, $html, $embedded);
+    }
+
+    /**
+     * Runs notification rendering in the link's stored locale.
+     *
+     * @param array<string, mixed> $link Link row.
+     */
+    private function withLinkLocale(array $link, callable $callback): void
+    {
+        $previous = app_locale();
+        app_locale((string) ($link['locale'] ?? default_locale()), false);
+
+        try {
+            $callback();
+        } finally {
+            app_locale($previous, false);
+        }
     }
 
     /**
@@ -291,7 +318,7 @@ final class MailService
         }
 
         $qrHtml = $showQr
-            ? '<div style="margin:22px 0;text-align:center;"><img src="cid:qr-code" alt="QR-код" width="220" height="220" style="width:220px;height:220px;border:1px solid #d7e0e0;border-radius:8px;padding:12px;background:#ffffff;"></div>'
+            ? '<div style="margin:22px 0;text-align:center;"><img src="cid:qr-code" alt="QR code" width="220" height="220" style="width:220px;height:220px;border:1px solid #d7e0e0;border-radius:8px;padding:12px;background:#ffffff;"></div>'
             : '';
 
         $noteHtml = $note !== '' ? '<p style="margin:22px 0 0;color:#63727d;font-size:13px;">' . e($note) . '</p>' : '';

@@ -15,15 +15,30 @@ use App\Controllers\AdminController;
 use App\Controllers\AuthController;
 use App\Controllers\PublicController;
 
-$router->get('/', [PublicController::class, 'gallery']);
-$router->get('/new', [PublicController::class, 'create']);
-$router->get('/create', [PublicController::class, 'create']);
-$router->get('/impressum', [PublicController::class, 'impressum']);
-$router->get('/datenschutz', [PublicController::class, 'datenschutz']);
+$publicRoutes = [
+    '' => [PublicController::class, 'gallery'],
+    'new' => [PublicController::class, 'create'],
+    'create' => [PublicController::class, 'create'],
+    'impressum' => [PublicController::class, 'impressum'],
+    'datenschutz' => [PublicController::class, 'datenschutz'],
+];
+
+foreach ($publicRoutes as $path => $handler) {
+    $router->get('/' . $path, $handler);
+    foreach (supported_locales() as $locale) {
+        $router->get('/' . $locale . ($path !== '' ? '/' . $path : ''), $handler);
+    }
+}
+
 $router->post('/links', [PublicController::class, 'store']);
 $router->get('/result/{code}', [PublicController::class, 'result']);
 $router->get('/qr/{code}', [PublicController::class, 'qrPage']);
 $router->get('/qr/{code}/download', [PublicController::class, 'downloadQr']);
+foreach (supported_locales() as $locale) {
+    $router->get('/' . $locale . '/result/{code}', [PublicController::class, 'result']);
+    $router->get('/' . $locale . '/qr/{code}', [PublicController::class, 'qrPage']);
+    $router->get('/' . $locale . '/qr/{code}/download', [PublicController::class, 'downloadQr']);
+}
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/logout', [AuthController::class, 'logout']);

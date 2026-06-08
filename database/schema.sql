@@ -16,6 +16,7 @@ CREATE TABLE qr_links (
   status ENUM('pending','approved','rejected','blocked') NOT NULL DEFAULT 'pending',
   is_public TINYINT(1) NOT NULL DEFAULT 0,
   submitter_email VARCHAR(190) NULL,
+  locale VARCHAR(5) NOT NULL DEFAULT 'de',
   comment TEXT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,

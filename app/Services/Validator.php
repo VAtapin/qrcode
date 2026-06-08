@@ -26,7 +26,7 @@ final class Validator
     public static function title(string $title): ?string
     {
         $length = mb_strlen(trim($title));
-        return $length >= 2 && $length <= 190 ? null : 'Название должно быть от 2 до 190 символов.';
+        return $length >= 2 && $length <= 190 ? null : __('validation.title');
     }
 
     /**
@@ -35,7 +35,7 @@ final class Validator
     public static function url(string $url): ?string
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return 'URL имеет неверный формат.';
+            return __('validation.url');
         }
 
         $parts = parse_url($url);
@@ -43,16 +43,16 @@ final class Validator
         $host = strtolower((string) ($parts['host'] ?? ''));
 
         if (!in_array($scheme, ['http', 'https'], true)) {
-            return 'Разрешены только ссылки http и https.';
+            return __('validation.http_only');
         }
 
         if ($host === '' || in_array($host, ['localhost', '127.0.0.1', '0.0.0.0', '::1'], true)) {
-            return 'Локальные адреса запрещены.';
+            return __('validation.local_forbidden');
         }
 
         $ip = filter_var($host, FILTER_VALIDATE_IP) ? $host : gethostbyname($host);
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
-            return 'Внутренние и служебные IP-адреса запрещены.';
+            return __('validation.private_ip_forbidden');
         }
 
         return null;
@@ -64,11 +64,11 @@ final class Validator
     public static function code(string $code): ?string
     {
         if (!preg_match('/^[A-Za-z0-9*_]{3,50}$/', $code)) {
-            return 'Короткий код должен содержать 3-50 символов: a-z, A-Z, 0-9, * или _.';
+            return __('validation.code');
         }
 
         if (BlacklistWord::isBlocked($code)) {
-            return 'Этот короткий код зарезервирован.';
+            return __('validation.code_reserved');
         }
 
         return null;
@@ -79,6 +79,6 @@ final class Validator
      */
     public static function color(string $color): ?string
     {
-        return preg_match('/^#[0-9A-Fa-f]{6}$/', $color) ? null : 'Цвет QR-кода должен быть HEX вида #000000.';
+        return preg_match('/^#[0-9A-Fa-f]{6}$/', $color) ? null : __('validation.color');
     }
 }
