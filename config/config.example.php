@@ -16,6 +16,7 @@ return [
     ],
     'mail' => [
         'from' => 'no-reply@example.com',
+        'admin_to' => '',
         'smtp' => [
             'host' => '',
             'port' => 587,

@@ -1,47 +1,51 @@
 # Q to me
 
-PHP 8.2+ service for moderated short links and QR codes.
+Сервис коротких ссылок и QR-кодов для домена `q-2.me`.
 
-The main page shows a public gallery of approved QR codes. New links are created on `/new`, receive a QR code immediately, and start redirecting only after approval.
+Главная страница показывает публичную галерею одобренных QR-кодов. Новые ссылки создаются на `/new`, сразу получают QR-код для скачивания и начинают перенаправлять посетителей после модерации.
 
-## Features
+## Возможности
 
-- Public gallery on `/` with approved public QR codes only.
-- Search by title and short code with `/?search=solar`.
-- Quick filters: all, public, latest.
-- Pagination: 20 QR codes per page.
-- Public and private links through `is_public`.
-- Result page after creation with immediate QR download.
-- QR page on `/qr/{short_code}` for approved links.
-- Admin moderation: pending, approved, rejected, blocked.
-- Optional instant approval when an admin creates a link.
-- E-mail notifications after submission and approval.
-- SMTP settings with safe fallback to `storage/logs/mail.log`.
-- Editable short-code blacklist in `/admin/blacklist`.
-- Click statistics: count and last click date.
-- Admin deletion removes both the database record and the generated QR PNG.
+- Публичная галерея QR-кодов на `/`.
+- Поиск по названию и короткому коду.
+- Публичные и приватные ссылки.
+- Отдельная страница QR-кода: `/qr/{short_code}`.
+- Скачивание QR-кода сразу после создания.
+- Админка с модерацией: pending, approved, rejected, blocked.
+- Быстрое одобрение ссылки при создании администратором.
+- Уведомления пользователю и администратору по e-mail.
+- Красивые HTML-письма со ссылками, кнопками и QR-кодом в теле письма.
+- SMTP через PHPMailer, включая Gmail.
+- Fallback в `storage/logs/mail.log`, если SMTP не настроен или отправка не удалась.
+- Защита формы: honeypot, time trap, лимиты по IP-хешу.
+- Редактируемый чёрный список коротких кодов.
+- Статистика переходов: количество и дата последнего перехода.
+- Удаление записи вместе с PNG-файлом QR-кода.
 
-## Installation
+## Установка
 
-1. Install dependencies:
+1. Загрузите файлы проекта на сервер.
+
+2. Установите зависимости:
 
    ```bash
    composer install --no-dev --optimize-autoloader
    ```
 
-2. Create and edit local config:
+3. Создайте локальный конфиг:
 
    ```bash
    cp config/config.example.php config/config.php
    ```
 
-   `config/config.php` is ignored by Git, so server passwords and SMTP settings are not overwritten by updates.
+4. Откройте `config/config.php` и задайте настройки:
 
    ```php
    'app' => [
+       'name' => 'Q to me',
        'base_url' => 'https://q-2.me',
        'timezone' => 'Europe/Berlin',
-       'secret_salt' => 'change-this-long-random-secret',
+       'secret_salt' => 'long-random-secret',
    ],
    'db' => [
        'dsn' => 'mysql:host=localhost;dbname=DB_NAME;charset=utf8mb4',
@@ -50,39 +54,36 @@ The main page shows a public gallery of approved QR codes. New links are created
    ],
    ```
 
-3. Import the schema on a fresh install:
+   `config/config.php` игнорируется Git, поэтому пароли базы и SMTP не перетираются при обновлениях.
+
+5. Импортируйте базу данных:
 
    ```bash
    mysql -u DB_USER -p DB_NAME < database/schema.sql
    ```
 
-   For an existing installation, apply:
-
-   ```bash
-   mysql -u DB_USER -p DB_NAME < database/update_gallery_email_blacklist.sql
-   ```
-
-4. Create the first administrator:
+6. Создайте первого администратора:
 
    ```bash
    php database/create_admin.php admin strong-password
    ```
 
-5. Make storage writable:
+7. Дайте серверу права на запись:
 
    ```bash
    chmod -R 775 storage/qrcodes storage/logs
    ```
 
-6. Keep the document root on `public` when possible. If the host points to the project root, the root `.htaccess` forwards requests to `public/index.php` and blocks service folders.
+8. Лучше направить document root хостинга в папку `public`. Если хостинг смотрит в корень проекта, корневой `.htaccess` перенаправит запросы в `public/index.php` и закроет служебные папки.
 
-## SMTP / Gmail
+## Настройка SMTP Gmail
 
-Notifications are sent with PHPMailer when SMTP is configured:
+Пример для Gmail:
 
 ```php
 'mail' => [
-    'from' => 'no-reply@q-2.me',
+    'from' => 'your-account@gmail.com',
+    'admin_to' => 'admin@example.com',
     'smtp' => [
         'host' => 'smtp.gmail.com',
         'port' => 587,
@@ -93,45 +94,63 @@ Notifications are sent with PHPMailer when SMTP is configured:
 ],
 ```
 
-If SMTP is empty or sending fails, the message is written to:
+Для Gmail нужен пароль приложения. В аккаунте Google включите двухэтапную проверку, создайте App Password и вставьте его в конфиг. Google показывает пароль группами вроде `dlni ixzt jkrj dowc`; в конфиг лучше писать без пробелов: `dlniixztjkrjdowc`.
 
-```text
-storage/logs/mail.log
-```
+`admin_to` получает письмо, когда создан новый QR-код.
 
-For Gmail, enable 2-Step Verification and create an App Password. Google shows it in groups like `dlni ixzt jkrj dowc`; store it without spaces: `dlniixztjkrjdowc`.
+## Проверка почты
 
-The application does not fail because of mail delivery problems.
+Если письмо не пришло:
 
-## Spam Protection
+1. Проверьте, что после обновления выполнен `composer install --no-dev --optimize-autoloader`.
+2. Проверьте настройки `mail.from`, `mail.admin_to`, `mail.smtp.host`, `mail.smtp.username`, `mail.smtp.password`.
+3. Для Gmail убедитесь, что используется именно App Password, а не обычный пароль от аккаунта.
+4. Проверьте лог:
 
-The public create form uses a hidden honeypot field, a minimum form-fill time check, the existing 5 submissions per 10 minutes limit, and a 20 submissions per day limit per IP hash. Admin-created links are not limited by these public form checks.
+   ```bash
+   tail -n 80 storage/logs/mail.log
+   ```
 
-## Public Gallery
+Если SMTP пустой или отправка падает, письмо и ошибка записываются в этот лог. Сайт при этом не ломается.
 
-Only links with these values are shown:
+## Модерация
+
+Новые ссылки получают статус `pending`, если администратор не выбрал “Сразу одобрить”.
+
+Статусы:
+
+- `pending` — ожидает проверки, короткая ссылка не перенаправляет.
+- `approved` — ссылка работает, QR-страница доступна.
+- `rejected` — ссылка отклонена.
+- `blocked` — ссылка заблокирована.
+
+При изменении статуса пользователь получает e-mail, если у ссылки указан e-mail автора.
+
+## Галерея
+
+Гости видят только:
 
 ```text
 status = approved
 is_public = 1
 ```
 
-Private approved links still redirect by short code, but do not appear in the gallery.
+Администратор в галерее может видеть публичные и приватные одобренные ссылки.
 
-## QR Downloads
+## Чёрный список
 
-- Result page: `/result/{short_code}`
-- Approved QR page: `/qr/{short_code}`
-- Download QR: `/qr/{short_code}/download`
-
-QR download is available immediately after creation.
-
-## Blacklist
-
-Admins can manage forbidden short codes at:
+Администратор управляет запрещёнными короткими кодами на:
 
 ```text
 /admin/blacklist
 ```
 
-The initial schema seeds examples such as `admin`, `login`, `logout`, `api`, `config`, `root`, and `system`.
+Слова из чёрного списка нельзя использовать как короткий код.
+
+## QR-коды
+
+- Результат после создания: `/result/{short_code}`
+- Публичная страница QR: `/qr/{short_code}`
+- Скачивание QR: `/qr/{short_code}/download`
+
+Скачать QR можно сразу после создания, даже если ссылка ещё ожидает модерации.

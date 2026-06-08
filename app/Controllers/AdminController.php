@@ -43,10 +43,11 @@ final class AdminController
     public function update(string $id): void
     {
         AuthMiddleware::requireAdmin();
+        $returnTo = $this->safeReturnTo('/admin/edit/' . (int) $id);
         $link = Link::find((int) $id);
         if ($link === null || !Csrf::verify()) {
             flash('error', 'Не удалось сохранить изменения.');
-            redirect('/admin');
+            redirect($returnTo);
         }
 
         $data = [
@@ -75,54 +76,58 @@ final class AdminController
 
         if ($errors !== []) {
             flash('error', implode(' ', $errors));
-            redirect('/admin/edit/' . (int) $id);
+            redirect($returnTo);
         }
 
         Link::update((int) $id, $data);
         Link::updateQrPath((int) $id, (new QrService())->generate($data['short_code'], $data['qr_color']));
+        $updatedLink = Link::find((int) $id);
+        if ($updatedLink !== null) {
+            (new MailService())->sendLinkUpdated($updatedLink);
+        }
         AdminLog::write((int) $_SESSION['admin_id'], 'updated', (int) $id);
         flash('success', 'Изменения сохранены.');
-        redirect('/admin/edit/' . (int) $id);
+        redirect($returnTo);
     }
 
     public function status(string $id): void
     {
         AuthMiddleware::requireAdmin();
+        $returnTo = $this->safeReturnTo('/admin');
         $status = (string) ($_POST['status'] ?? '');
         if (!Csrf::verify() || !in_array($status, self::STATUSES, true)) {
             flash('error', 'Некорректное действие.');
-            redirect('/admin');
+            redirect($returnTo);
         }
 
         $link = Link::setStatus((int) $id, $status);
         AdminLog::write((int) $_SESSION['admin_id'], $status, (int) $id);
 
-        if ($status === 'approved' && $link !== null && !empty($link['submitter_email'])) {
-            (new MailService())->send(
-                $link['submitter_email'],
-                'Ссылка одобрена',
-                "Ссылка одобрена.\nКороткая ссылка: " . url($link['short_code']) .
-                "\nСтраница QR-кода: " . url('qr/' . $link['short_code']) .
-                "\nСкачать QR: " . url('qr/' . $link['short_code'] . '/download')
-            );
+        if ($link !== null) {
+            (new MailService())->sendLinkStatusChanged($link, $status);
         }
 
         flash('success', 'Статус обновлен.');
-        redirect('/admin/' . $status);
+        redirect($returnTo);
     }
 
     public function delete(string $id): void
     {
         AuthMiddleware::requireAdmin();
+        $returnTo = $this->safeReturnTo('/admin');
         if (!Csrf::verify()) {
             flash('error', 'Некорректный CSRF-токен.');
-            redirect('/admin');
+            redirect($returnTo);
         }
 
+        $link = Link::find((int) $id);
+        if ($link !== null) {
+            (new MailService())->sendLinkDeleted($link);
+        }
         AdminLog::write((int) $_SESSION['admin_id'], 'deleted', null);
         Link::delete((int) $id);
         flash('success', 'Запись удалена.');
-        redirect('/admin');
+        redirect($returnTo);
     }
 
     public function blacklist(): void
@@ -169,5 +174,17 @@ final class AdminController
             'status' => $status,
             'links' => Link::listByStatus($status),
         ]);
+    }
+
+    private function safeReturnTo(string $default): string
+    {
+        $returnTo = (string) ($_POST['return_to'] ?? ($_SERVER['HTTP_REFERER'] ?? ''));
+        $path = parse_url($returnTo, PHP_URL_PATH);
+        $query = parse_url($returnTo, PHP_URL_QUERY);
+        if (!is_string($path) || $path === '' || !str_starts_with($path, '/') || str_starts_with($path, '//')) {
+            return $default;
+        }
+
+        return $query ? $path . '?' . $query : $path;
     }
 }

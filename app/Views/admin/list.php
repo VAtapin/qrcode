@@ -48,6 +48,7 @@
                             <?php if ($status !== $next): ?>
                                 <form method="post" action="/admin/status/<?= e((string) $link['id']) ?>">
                                     <?= \App\Core\Csrf::field() ?>
+                                    <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? ('/admin/' . $status)) ?>">
                                     <input type="hidden" name="status" value="<?= e($next) ?>">
                                     <button type="submit"><?= e($label) ?></button>
                                 </form>
@@ -55,6 +56,7 @@
                         <?php endforeach; ?>
                         <form method="post" action="/admin/delete/<?= e((string) $link['id']) ?>" onsubmit="return confirm('Удалить запись и QR-код?')">
                             <?= \App\Core\Csrf::field() ?>
+                            <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? ('/admin/' . $status)) ?>">
                             <button type="submit" class="danger">Удалить</button>
                         </form>
                     </td>

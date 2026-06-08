@@ -3,6 +3,7 @@
     <?php if ($message = flash('error')): ?><div class="alert error"><?= e($message) ?></div><?php endif; ?>
     <form method="post" action="/admin/edit/<?= e((string) $link['id']) ?>" class="form">
         <?= \App\Core\Csrf::field() ?>
+        <input type="hidden" name="return_to" value="/admin/edit/<?= e((string) $link['id']) ?>">
         <label>Название<input name="title" required value="<?= e($link['title']) ?>"></label>
         <label>URL<input name="target_url" type="url" required value="<?= e($link['target_url']) ?>"></label>
         <label>Короткий код<input name="short_code" required value="<?= e($link['short_code']) ?>"></label>
@@ -22,6 +23,7 @@
     </div>
     <form method="post" action="/admin/delete/<?= e((string) $link['id']) ?>" class="danger-form">
         <?= \App\Core\Csrf::field() ?>
+        <input type="hidden" name="return_to" value="/admin/<?= e($link['status']) ?>">
         <button type="submit" class="danger">Удалить запись и QR-код</button>
     </form>
 </section>

@@ -114,23 +114,10 @@ final class PublicController
         Link::updateQrPath($id, $qrPath);
 
         $link = Link::find($id);
-        if ($link !== null && !empty($link['submitter_email'])) {
+        if ($link !== null) {
             $mailer = new MailService();
-            if ($link['status'] === 'approved') {
-                $mailer->send(
-                    $link['submitter_email'],
-                    'Ссылка одобрена',
-                    "Ссылка одобрена.\nКороткая ссылка: " . url($link['short_code']) .
-                    "\nСтраница QR-кода: " . url('qr/' . $link['short_code']) .
-                    "\nСкачать QR: " . url('qr/' . $link['short_code'] . '/download')
-                );
-            } else {
-                $mailer->send(
-                    $link['submitter_email'],
-                    'Ссылка ожидает модерации',
-                    "Название: {$link['title']}\nКороткий код: {$link['short_code']}\nСтатус: {$link['status']}\nСсылка ожидает проверки администратором."
-                );
-            }
+            $mailer->sendLinkSubmitted($link);
+            $mailer->sendAdminNewLink($link);
         }
 
         redirect('/result/' . $shortCode);
