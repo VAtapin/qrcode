@@ -10,7 +10,7 @@
 <header class="topbar">
     <a class="brand" href="/">
         <span>Q to me</span>
-        <small>q-2.me</small>
+        <small>QR ко мне · q-2.me</small>
     </a>
     <nav>
         <a href="/">Галерея</a>
