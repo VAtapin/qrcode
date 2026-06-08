@@ -9,8 +9,11 @@
 <body>
 <header class="topbar">
     <a class="brand" href="/">
-        <span>Q to me</span>
-        <small>QR ко мне · q-2.me</small>
+        <img src="/assets/logo.svg" alt="" class="brand-logo" width="44" height="44">
+        <span class="brand-copy">
+            <span>Q to me</span>
+            <small>QR ко мне · q-2.me</small>
+        </span>
     </a>
     <nav>
         <a href="/">Галерея</a>

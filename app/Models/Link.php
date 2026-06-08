@@ -142,6 +142,15 @@ final class Link
         return (int) $stmt->fetchColumn();
     }
 
+    public static function countDailyByIpHash(string $ipHash): int
+    {
+        $stmt = Database::pdo()->prepare(
+            'SELECT COUNT(*) FROM qr_links WHERE created_ip_hash = :ip_hash AND created_at >= (NOW() - INTERVAL 1 DAY)'
+        );
+        $stmt->execute(['ip_hash' => $ipHash]);
+        return (int) $stmt->fetchColumn();
+    }
+
     public static function update(int $id, array $data): void
     {
         $stmt = Database::pdo()->prepare(

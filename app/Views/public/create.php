@@ -8,6 +8,11 @@
 
     <form method="post" action="/links" class="form">
         <?= \App\Core\Csrf::field() ?>
+        <input type="hidden" name="form_started_at" value="<?= time() ?>">
+        <label class="hp-field" aria-hidden="true" tabindex="-1">
+            Website
+            <input name="website" autocomplete="off" tabindex="-1">
+        </label>
         <label>
             Название ссылки
             <input name="title" maxlength="190" required value="<?= e($old['title'] ?? '') ?>">

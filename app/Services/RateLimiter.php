@@ -12,4 +12,14 @@ final class RateLimiter
     {
         return Link::countRecentByIpHash($ipHash) >= 5;
     }
+
+    public static function tooManyDailySubmissions(string $ipHash): bool
+    {
+        return Link::countDailyByIpHash($ipHash) >= 20;
+    }
+
+    public static function formWasSubmittedTooFast(int $startedAt): bool
+    {
+        return $startedAt <= 0 || (time() - $startedAt) < 3;
+    }
 }

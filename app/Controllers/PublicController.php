@@ -58,6 +58,8 @@ final class PublicController
         $isPublic = isset($_POST['is_public']) ? 1 : 0;
         $approveNow = $isAdmin && isset($_POST['approve_now']);
         $agree = isset($_POST['agree']);
+        $honeypot = trim((string) ($_POST['website'] ?? ''));
+        $startedAt = (int) ($_POST['form_started_at'] ?? 0);
         $ipHash = ip_hash();
 
         $errors = [];
@@ -80,8 +82,14 @@ final class PublicController
         if (Link::codeExists($shortCode)) {
             $errors[] = 'Этот короткий код уже занят.';
         }
+        if (!$isAdmin && ($honeypot !== '' || RateLimiter::formWasSubmittedTooFast($startedAt))) {
+            $errors[] = 'Не удалось отправить форму. Попробуйте позже.';
+        }
         if (!$isAdmin && RateLimiter::tooManySubmissions($ipHash)) {
             $errors[] = 'Слишком много заявок. Попробуйте позже.';
+        }
+        if (!$isAdmin && RateLimiter::tooManyDailySubmissions($ipHash)) {
+            $errors[] = 'Достигнут суточный лимит заявок. Попробуйте завтра.';
         }
 
         if ($errors !== []) {

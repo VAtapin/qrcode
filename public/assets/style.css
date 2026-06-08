@@ -34,8 +34,10 @@ a { color: var(--accent-dark); }
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
 }
-.brand { display: grid; gap: 1px; font-weight: 800; text-decoration: none; color: var(--ink); }
-.brand span { font-size: 20px; }
+.brand { display: flex; gap: 10px; align-items: center; font-weight: 800; text-decoration: none; color: var(--ink); }
+.brand-logo { width: 44px; height: 44px; flex: 0 0 auto; }
+.brand-copy { display: grid; gap: 1px; }
+.brand-copy span { font-size: 20px; }
 .brand small { color: var(--muted); font-size: 12px; font-weight: 600; }
 nav { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 nav a { text-decoration: none; font-weight: 700; }
@@ -53,6 +55,13 @@ nav a:hover { color: var(--accent); }
 h1 { margin: 0 0 10px; font-size: 28px; }
 .muted { color: var(--muted); }
 .form { display: grid; gap: 16px; margin-top: 24px; }
+.hp-field {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
 label { display: grid; gap: 8px; font-weight: 700; }
 input, textarea {
     width: 100%;

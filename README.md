@@ -70,18 +70,18 @@ The main page shows a public gallery of approved QR codes. New links are created
 
 6. Keep the document root on `public` when possible. If the host points to the project root, the root `.htaccess` forwards requests to `public/index.php` and blocks service folders.
 
-## SMTP
+## SMTP / Gmail
 
-If SMTP is configured, notifications are sent through it:
+Notifications are sent with PHPMailer when SMTP is configured:
 
 ```php
 'mail' => [
     'from' => 'no-reply@q-2.me',
     'smtp' => [
-        'host' => 'smtp.example.com',
+        'host' => 'smtp.gmail.com',
         'port' => 587,
-        'username' => 'smtp-user',
-        'password' => 'smtp-password',
+        'username' => 'your-account@gmail.com',
+        'password' => 'gmail-app-password-without-spaces',
         'encryption' => 'tls',
     ],
 ],
@@ -93,7 +93,13 @@ If SMTP is empty or sending fails, the message is written to:
 storage/logs/mail.log
 ```
 
+For Gmail, enable 2-Step Verification and create an App Password. Google shows it in groups like `dlni ixzt jkrj dowc`; store it without spaces: `dlniixztjkrjdowc`.
+
 The application does not fail because of mail delivery problems.
+
+## Spam Protection
+
+The public create form uses a hidden honeypot field, a minimum form-fill time check, the existing 5 submissions per 10 minutes limit, and a 20 submissions per day limit per IP hash. Admin-created links are not limited by these public form checks.
 
 ## Public Gallery
 

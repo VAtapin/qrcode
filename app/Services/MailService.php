@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+
 final class MailService
 {
     public function send(string $to, string $subject, string $body): void
@@ -18,75 +21,45 @@ final class MailService
             return;
         }
 
-        if (!$this->sendViaSmtp($to, $subject, $body, $smtp)) {
+        try {
+            $this->sendViaSmtp($to, $subject, $body, $smtp);
+        } catch (\Throwable $exception) {
             $this->log($to, $subject, $body);
+            $this->logError($to, $subject, $exception);
         }
     }
 
-    private function sendViaSmtp(string $to, string $subject, string $body, array $smtp): bool
+    /**
+     * @throws Exception
+     */
+    private function sendViaSmtp(string $to, string $subject, string $body, array $smtp): void
     {
-        $host = (string) ($smtp['host'] ?? '');
-        $port = (int) ($smtp['port'] ?? 587);
+        $mail = new PHPMailer(true);
         $encryption = strtolower((string) ($smtp['encryption'] ?? 'tls'));
-        $target = ($encryption === 'ssl' ? 'ssl://' : '') . $host . ':' . $port;
-        $socket = @stream_socket_client($target, $errno, $errstr, 10);
-        if (!is_resource($socket)) {
-            return false;
-        }
 
-        $ok = $this->expect($socket, [220])
-            && $this->command($socket, 'EHLO ' . ($_SERVER['SERVER_NAME'] ?? 'localhost'), [250]);
+        $mail->isSMTP();
+        $mail->Host = (string) ($smtp['host'] ?? '');
+        $mail->Port = (int) ($smtp['port'] ?? 587);
+        $mail->SMTPAuth = !empty($smtp['username']);
+        $mail->Username = (string) ($smtp['username'] ?? '');
+        $mail->Password = str_replace(' ', '', (string) ($smtp['password'] ?? ''));
+        $mail->CharSet = 'UTF-8';
 
-        if ($ok && $encryption === 'tls') {
-            $ok = $this->command($socket, 'STARTTLS', [220])
-                && @stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)
-                && $this->command($socket, 'EHLO ' . ($_SERVER['SERVER_NAME'] ?? 'localhost'), [250]);
-        }
-
-        if ($ok && !empty($smtp['username'])) {
-            $ok = $this->command($socket, 'AUTH LOGIN', [334])
-                && $this->command($socket, base64_encode((string) $smtp['username']), [334])
-                && $this->command($socket, base64_encode((string) $smtp['password']), [235]);
+        if ($encryption === 'ssl') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } elseif ($encryption === 'tls') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         }
 
         $from = config('mail.from', 'no-reply@example.com');
-        $message = implode("\r\n", [
-            'From: ' . $from,
-            'To: ' . $to,
-            'Subject: =?UTF-8?B?' . base64_encode($subject) . '?=',
-            'Content-Type: text/plain; charset=UTF-8',
-            '',
-            $body,
-        ]);
+        $fromName = config('app.name', 'Q to me');
 
-        $ok = $ok
-            && $this->command($socket, 'MAIL FROM:<' . $from . '>', [250])
-            && $this->command($socket, 'RCPT TO:<' . $to . '>', [250, 251])
-            && $this->command($socket, 'DATA', [354])
-            && $this->command($socket, $message . "\r\n.", [250])
-            && $this->command($socket, 'QUIT', [221]);
-
-        fclose($socket);
-        return $ok;
-    }
-
-    private function command(mixed $socket, string $command, array $codes): bool
-    {
-        fwrite($socket, $command . "\r\n");
-        return $this->expect($socket, $codes);
-    }
-
-    private function expect(mixed $socket, array $codes): bool
-    {
-        $line = '';
-        do {
-            $line = fgets($socket, 515);
-            if ($line === false) {
-                return false;
-            }
-        } while (isset($line[3]) && $line[3] === '-');
-
-        return in_array((int) substr($line, 0, 3), $codes, true);
+        $mail->setFrom($from, $fromName);
+        $mail->addAddress($to);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+        $mail->AltBody = $body;
+        $mail->send();
     }
 
     private function log(string $to, string $subject, string $body): void
@@ -97,6 +70,18 @@ final class MailService
             $to,
             $subject,
             $body
+        );
+        file_put_contents(STORAGE_PATH . '/logs/mail.log', $line, FILE_APPEND | LOCK_EX);
+    }
+
+    private function logError(string $to, string $subject, \Throwable $exception): void
+    {
+        $line = sprintf(
+            "[%s] SMTP error\nTo: %s\nSubject: %s\nError: %s\n\n",
+            date('c'),
+            $to,
+            $subject,
+            $exception->getMessage()
         );
         file_put_contents(STORAGE_PATH . '/logs/mail.log', $line, FILE_APPEND | LOCK_EX);
     }
