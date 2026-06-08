@@ -77,10 +77,6 @@ nav a:hover { color: var(--accent); }
     color: var(--muted);
     font-size: 12px;
 }
-.language-options a.active {
-    background: #edf7f6;
-    color: var(--accent-dark);
-}
 .container { max-width: 1120px; margin: 32px auto; padding: 0 20px; }
 .site-footer {
     display: flex;

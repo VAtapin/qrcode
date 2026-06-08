@@ -34,7 +34,9 @@
             <span class="language-current">🌐 <?= e(strtoupper(app_locale())) ?></span>
             <span class="language-options">
             <?php foreach (supported_locales() as $locale): ?>
-                <a class="<?= app_locale() === $locale ? 'active' : '' ?>" href="<?= e(localized_path('', $locale)) ?>"><?= e(strtoupper($locale)) ?></a>
+                <?php if (app_locale() !== $locale): ?>
+                    <a href="<?= e(localized_path('', $locale)) ?>"><?= e(strtoupper($locale)) ?></a>
+                <?php endif; ?>
             <?php endforeach; ?>
             </span>
         </span>
