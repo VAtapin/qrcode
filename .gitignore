@@ -5,3 +5,4 @@
 !/storage/qrcodes/.gitkeep
 !/storage/logs/.gitkeep
 .env
+/config/config.php

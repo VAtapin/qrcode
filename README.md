@@ -29,7 +29,13 @@ The main page shows a public gallery of approved QR codes. New links are created
    composer install --no-dev --optimize-autoloader
    ```
 
-2. Edit `config/config.php`:
+2. Create and edit local config:
+
+   ```bash
+   cp config/config.example.php config/config.php
+   ```
+
+   `config/config.php` is ignored by Git, so server passwords and SMTP settings are not overwritten by updates.
 
    ```php
    'app' => [
