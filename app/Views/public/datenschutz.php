@@ -5,8 +5,7 @@
     <h2>Verantwortlicher</h2>
     <p>
         Volodymyr Atapin<br>
-        <a href="mailto:atapin@gmail.com">atapin@gmail.com</a><br>
-        <a href="https://bible-media.de/" target="_blank" rel="noreferrer">https://bible-media.de/</a>
+        <a href="mailto:atapin@gmail.com">atapin@gmail.com</a>
     </p>
 
     <h2>Zweck des Dienstes</h2>
@@ -44,6 +43,13 @@
     <p>
         Fragen zum Datenschutz können per E-Mail an
         <a href="mailto:atapin@gmail.com">atapin@gmail.com</a> gesendet werden.
+    </p>
+
+    <h2>Technische Umsetzung</h2>
+    <p>
+        Die Website wurde von
+        <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a>
+        hergestellt. Bible Media Agentur ist nicht Betreiber oder Eigentümer dieses Projekts.
     </p>
 
     <p class="muted">
