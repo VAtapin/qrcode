@@ -37,5 +37,10 @@
     <?php endforeach; ?>
     <?= $content ?>
 </main>
+<footer class="site-footer">
+    <span>&copy; <?= date('Y') ?> Q to me</span>
+    <span>Разработка и поддержка: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media</a></span>
+    <a href="/impressum">Impressum</a>
+</footer>
 </body>
 </html>

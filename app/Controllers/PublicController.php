@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Controllers;
 
 use App\Core\Csrf;
@@ -12,8 +21,14 @@ use App\Services\QrService;
 use App\Services\RateLimiter;
 use App\Services\Validator;
 
+/**
+ * Handles public gallery, link creation, QR pages, downloads, and redirects.
+ */
 final class PublicController
 {
+    /**
+     * Shows the public QR-code gallery with search, filters, and pagination.
+     */
     public function gallery(): void
     {
         $search = trim((string) ($_GET['search'] ?? ''));
@@ -37,11 +52,25 @@ final class PublicController
         ]);
     }
 
+    /**
+     * Shows the public form for creating a new short link.
+     */
     public function create(): void
     {
         view('public/create', ['title' => 'Создать короткую ссылку']);
     }
 
+    /**
+     * Shows the legal notice page.
+     */
+    public function impressum(): void
+    {
+        view('public/impressum', ['title' => 'Impressum']);
+    }
+
+    /**
+     * Validates and stores a new short link, generates QR, and sends notifications.
+     */
     public function store(): void
     {
         if (!Csrf::verify()) {
@@ -123,6 +152,11 @@ final class PublicController
         redirect('/result/' . $shortCode);
     }
 
+    /**
+     * Shows the result page after a QR code has been created.
+     *
+     * @param string $code Short link code.
+     */
     public function result(string $code): void
     {
         $link = Link::findByCode($code);
@@ -135,6 +169,11 @@ final class PublicController
         view('public/result', ['title' => 'QR-код создан', 'link' => $link]);
     }
 
+    /**
+     * Shows a public QR page only for approved links.
+     *
+     * @param string $code Short link code.
+     */
     public function qrPage(string $code): void
     {
         $link = Link::findByCode($code);
@@ -153,6 +192,11 @@ final class PublicController
         view('public/qr', ['title' => $link['title'], 'link' => $link]);
     }
 
+    /**
+     * Streams the generated QR image as a downloadable PNG file.
+     *
+     * @param string $code Short link code.
+     */
     public function downloadQr(string $code): void
     {
         $link = Link::findByCode($code);
@@ -173,6 +217,11 @@ final class PublicController
         readfile($path);
     }
 
+    /**
+     * Redirects an approved short code to its target URL and records a click.
+     *
+     * @param string $code Short link code.
+     */
     public function redirect(string $code): void
     {
         $link = Link::findByCode($code);
@@ -205,6 +254,11 @@ final class PublicController
         exit;
     }
 
+    /**
+     * Streams a stored QR PNG by filename.
+     *
+     * @param string $file QR image filename.
+     */
     public function qrImage(string $file): void
     {
         if (!preg_match('/^[a-f0-9]{64}\.png$/', $file)) {
@@ -223,6 +277,9 @@ final class PublicController
         readfile($path);
     }
 
+    /**
+     * Generates a unique short code that passes validation.
+     */
     private function generateCode(): string
     {
         do {
@@ -232,6 +289,12 @@ final class PublicController
         return $code;
     }
 
+    /**
+     * Renders the create form with a validation error and stops request handling.
+     *
+     * @param string $message Validation message.
+     * @param array<string, mixed> $old Previously submitted form data.
+     */
     private function validationError(string $message, array $old = []): never
     {
         http_response_code(422);

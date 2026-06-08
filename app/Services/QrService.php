@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Services;
 
 use Endroid\QrCode\Builder\Builder;
@@ -10,8 +19,14 @@ use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Writer\PngWriter;
 
+/**
+ * Generates QR-code PNG files for short links.
+ */
 final class QrService
 {
+    /**
+     * Generates a QR-code PNG and returns its storage-relative path.
+     */
     public function generate(string $shortCode, string $color): string
     {
         $hex = ltrim($color, '#');

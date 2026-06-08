@@ -2,10 +2,22 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Core;
 
 use PDO;
 
+/**
+ * Stores database configuration and provides a shared PDO connection.
+ */
 final class Database
 {
     private static ?PDO $pdo = null;
@@ -13,6 +25,13 @@ final class Database
     private static string $user = '';
     private static string $password = '';
 
+    /**
+     * Stores database credentials for lazy PDO initialization.
+     *
+     * @param string $dsn PDO DSN.
+     * @param string $user Database user.
+     * @param string $password Database password.
+     */
     public static function configure(string $dsn, string $user, string $password): void
     {
         self::$dsn = $dsn;
@@ -20,6 +39,9 @@ final class Database
         self::$password = $password;
     }
 
+    /**
+     * Returns the shared PDO connection.
+     */
     public static function pdo(): PDO
     {
         if (self::$pdo === null) {

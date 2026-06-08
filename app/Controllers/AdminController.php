@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Controllers;
 
 use App\Core\Csrf;
@@ -13,21 +22,36 @@ use App\Services\MailService;
 use App\Services\QrService;
 use App\Services\Validator;
 
+/**
+ * Handles administrator dashboards, moderation, edits, deletion, and blacklist actions.
+ */
 final class AdminController
 {
     private const STATUSES = ['pending', 'approved', 'rejected', 'blocked'];
 
+    /**
+     * Shows the administrator dashboard with aggregate statistics.
+     */
     public function dashboard(): void
     {
         AuthMiddleware::requireAdmin();
         view('admin/dashboard', ['title' => 'Админка', 'stats' => Link::stats()]);
     }
 
+    /** Shows pending links. */
     public function listPending(): void { $this->list('pending'); }
+    /** Shows approved links. */
     public function listApproved(): void { $this->list('approved'); }
+    /** Shows rejected links. */
     public function listRejected(): void { $this->list('rejected'); }
+    /** Shows blocked links. */
     public function listBlocked(): void { $this->list('blocked'); }
 
+    /**
+     * Shows the edit form for one link.
+     *
+     * @param string $id Link identifier from the route.
+     */
     public function edit(string $id): void
     {
         AuthMiddleware::requireAdmin();
@@ -40,6 +64,11 @@ final class AdminController
         view('admin/edit', ['title' => 'Редактирование', 'link' => $link]);
     }
 
+    /**
+     * Validates and saves administrator edits for one link.
+     *
+     * @param string $id Link identifier from the route.
+     */
     public function update(string $id): void
     {
         AuthMiddleware::requireAdmin();
@@ -90,6 +119,11 @@ final class AdminController
         redirect($returnTo);
     }
 
+    /**
+     * Changes moderation status and sends the corresponding user notification.
+     *
+     * @param string $id Link identifier from the route.
+     */
     public function status(string $id): void
     {
         AuthMiddleware::requireAdmin();
@@ -111,6 +145,11 @@ final class AdminController
         redirect($returnTo);
     }
 
+    /**
+     * Deletes one link and its generated QR image.
+     *
+     * @param string $id Link identifier from the route.
+     */
     public function delete(string $id): void
     {
         AuthMiddleware::requireAdmin();
@@ -130,6 +169,9 @@ final class AdminController
         redirect($returnTo);
     }
 
+    /**
+     * Shows editable blacklist words.
+     */
     public function blacklist(): void
     {
         AuthMiddleware::requireAdmin();
@@ -139,6 +181,9 @@ final class AdminController
         ]);
     }
 
+    /**
+     * Adds a word to the short-code blacklist.
+     */
     public function blacklistAdd(): void
     {
         AuthMiddleware::requireAdmin();
@@ -153,6 +198,11 @@ final class AdminController
         redirect('/admin/blacklist');
     }
 
+    /**
+     * Deletes one word from the blacklist.
+     *
+     * @param string $id Blacklist word identifier from the route.
+     */
     public function blacklistDelete(string $id): void
     {
         AuthMiddleware::requireAdmin();
@@ -166,6 +216,11 @@ final class AdminController
         redirect('/admin/blacklist');
     }
 
+    /**
+     * Renders links for the given moderation status.
+     *
+     * @param string $status Moderation status.
+     */
     private function list(string $status): void
     {
         AuthMiddleware::requireAdmin();
@@ -176,6 +231,11 @@ final class AdminController
         ]);
     }
 
+    /**
+     * Returns a safe internal redirect target for admin actions.
+     *
+     * @param string $default Fallback path.
+     */
     private function safeReturnTo(string $default): string
     {
         $returnTo = (string) ($_POST['return_to'] ?? ($_SERVER['HTTP_REFERER'] ?? ''));

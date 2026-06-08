@@ -2,18 +2,38 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Services;
 
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
+/**
+ * Sends user and administrator notifications through SMTP or a local mail log.
+ */
 final class MailService
 {
+    /**
+     * Sends a plain text message.
+     */
     public function send(string $to, string $subject, string $body): void
     {
         $this->sendMessage($to, $subject, $body);
     }
 
+    /**
+     * Sends the initial notification after a link has been created.
+     *
+     * @param array<string, mixed> $link Link row.
+     */
     public function sendLinkSubmitted(array $link): void
     {
         if (empty($link['submitter_email'])) {
@@ -38,6 +58,11 @@ final class MailService
         );
     }
 
+    /**
+     * Sends a status change notification to the link submitter.
+     *
+     * @param array<string, mixed> $link Link row.
+     */
     public function sendLinkStatusChanged(array $link, string $status): void
     {
         if (empty($link['submitter_email'])) {
@@ -70,6 +95,11 @@ final class MailService
         );
     }
 
+    /**
+     * Sends a notification after an administrator updates link details.
+     *
+     * @param array<string, mixed> $link Link row.
+     */
     public function sendLinkUpdated(array $link): void
     {
         if (empty($link['submitter_email'])) {
@@ -85,6 +115,11 @@ final class MailService
         );
     }
 
+    /**
+     * Sends a notification after an administrator deletes a link.
+     *
+     * @param array<string, mixed> $link Link row.
+     */
     public function sendLinkDeleted(array $link): void
     {
         if (empty($link['submitter_email'])) {
@@ -102,6 +137,11 @@ final class MailService
         );
     }
 
+    /**
+     * Sends a new-link notification to the configured administrator address.
+     *
+     * @param array<string, mixed> $link Link row.
+     */
     public function sendAdminNewLink(array $link): void
     {
         $adminEmail = (string) config('mail.admin_to', '');
@@ -119,6 +159,12 @@ final class MailService
         );
     }
 
+    /**
+     * Builds and sends an HTML link notification with optional embedded QR image.
+     *
+     * @param array<string, mixed> $link Link row.
+     * @param array<string, string> $buttons Button label to URL map.
+     */
     private function sendLinkMail(string $to, string $subject, string $lead, array $link, array $buttons = [], string $note = '', bool $includeDownload = true): void
     {
         $shortCode = (string) ($link['short_code'] ?? '');
@@ -151,6 +197,11 @@ final class MailService
         $this->sendMessage($to, $subject, $text, $html, $embedded);
     }
 
+    /**
+     * Sends a message through SMTP or writes it to the mail log when SMTP is not configured.
+     *
+     * @param array<string, string> $embeddedImages CID to filesystem path map.
+     */
     private function sendMessage(string $to, string $subject, string $body, ?string $html = null, array $embeddedImages = []): void
     {
         if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
@@ -172,6 +223,10 @@ final class MailService
     }
 
     /**
+     * Sends the message through PHPMailer.
+     *
+     * @param array<string, mixed> $smtp SMTP configuration.
+     * @param array<string, string> $embeddedImages CID to filesystem path map.
      * @throws Exception
      */
     private function sendViaSmtp(string $to, string $subject, string $body, array $smtp, ?string $html = null, array $embeddedImages = []): void
@@ -214,6 +269,12 @@ final class MailService
         $mail->send();
     }
 
+    /**
+     * Renders the HTML version of a notification e-mail.
+     *
+     * @param array<string, string> $rows Label to value map.
+     * @param array<string, string> $buttons Button label to URL map.
+     */
     private function renderHtml(string $title, string $lead, array $rows, array $buttons, bool $showQr, string $note): string
     {
         $rowsHtml = '';
@@ -248,6 +309,12 @@ final class MailService
             . '</div></div></body></html>';
     }
 
+    /**
+     * Renders the plain text fallback for a notification e-mail.
+     *
+     * @param array<string, string> $rows Label to value map.
+     * @param array<string, string> $buttons Button label to URL map.
+     */
     private function renderText(string $lead, array $rows, array $buttons, string $note): string
     {
         $lines = [$lead, ''];
@@ -267,6 +334,9 @@ final class MailService
         return implode("\n", $lines);
     }
 
+    /**
+     * Writes a message body to the local mail log.
+     */
     private function log(string $to, string $subject, string $body): void
     {
         $line = sprintf(
@@ -279,6 +349,9 @@ final class MailService
         file_put_contents(STORAGE_PATH . '/logs/mail.log', $line, FILE_APPEND | LOCK_EX);
     }
 
+    /**
+     * Writes SMTP error details to the local mail log.
+     */
     private function logError(string $to, string $subject, \Throwable $exception): void
     {
         $line = sprintf(

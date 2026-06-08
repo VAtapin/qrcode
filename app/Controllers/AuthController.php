@@ -2,18 +2,36 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Controllers;
 
 use App\Core\Csrf;
 use App\Models\Admin;
 
+/**
+ * Handles administrator authentication.
+ */
 final class AuthController
 {
+    /**
+     * Shows the administrator login form.
+     */
     public function showLogin(): void
     {
         view('auth/login', ['title' => 'Вход администратора']);
     }
 
+    /**
+     * Verifies administrator credentials and starts the admin session.
+     */
     public function login(): void
     {
         if (!Csrf::verify()) {
@@ -37,6 +55,9 @@ final class AuthController
         redirect('/admin');
     }
 
+    /**
+     * Ends the administrator session.
+     */
     public function logout(): void
     {
         if (Csrf::verify()) {

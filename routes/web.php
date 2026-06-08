@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 use App\Controllers\AdminController;
 use App\Controllers\AuthController;
 use App\Controllers\PublicController;
@@ -9,6 +18,7 @@ use App\Controllers\PublicController;
 $router->get('/', [PublicController::class, 'gallery']);
 $router->get('/new', [PublicController::class, 'create']);
 $router->get('/create', [PublicController::class, 'create']);
+$router->get('/impressum', [PublicController::class, 'impressum']);
 $router->post('/links', [PublicController::class, 'store']);
 $router->get('/result/{code}', [PublicController::class, 'result']);
 $router->get('/qr/{code}', [PublicController::class, 'qrPage']);

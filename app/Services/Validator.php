@@ -2,18 +2,36 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Services;
 
 use App\Models\BlacklistWord;
 
+/**
+ * Validates user-submitted link fields.
+ */
 final class Validator
 {
+    /**
+     * Validates a link title.
+     */
     public static function title(string $title): ?string
     {
         $length = mb_strlen(trim($title));
         return $length >= 2 && $length <= 190 ? null : 'Название должно быть от 2 до 190 символов.';
     }
 
+    /**
+     * Validates the destination URL and rejects local or private addresses.
+     */
     public static function url(string $url): ?string
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
@@ -40,6 +58,9 @@ final class Validator
         return null;
     }
 
+    /**
+     * Validates the requested short code against format and blacklist rules.
+     */
     public static function code(string $code): ?string
     {
         if (!preg_match('/^[A-Za-z0-9*_]{3,50}$/', $code)) {
@@ -53,6 +74,9 @@ final class Validator
         return null;
     }
 
+    /**
+     * Validates a HEX color value.
+     */
     public static function color(string $color): ?string
     {
         return preg_match('/^#[0-9A-Fa-f]{6}$/', $color) ? null : 'Цвет QR-кода должен быть HEX вида #000000.';

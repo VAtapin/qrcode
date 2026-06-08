@@ -2,13 +2,30 @@
 
 declare(strict_types=1);
 
+/**
+ * Q to me - moderated short link and QR code service.
+ *
+ * @author Atapin Vladimir <atapin@gmail.com>
+ * @link https://bible-media.de/
+ * @copyright 2026 Atapin Vladimir / Bible Media
+ * @version 1.0.0
+ */
+
 namespace App\Models;
 
 use App\Core\Database;
 use PDO;
 
+/**
+ * Provides database access for short links, QR metadata, gallery, and moderation.
+ */
 final class Link
 {
+    /**
+     * Creates a new short-link record.
+     *
+     * @param array<string, mixed> $data Link fields.
+     */
     public static function create(array $data): int
     {
         $stmt = Database::pdo()->prepare(
@@ -20,12 +37,20 @@ final class Link
         return (int) Database::pdo()->lastInsertId();
     }
 
+    /**
+     * Stores the generated QR image path for a link.
+     */
     public static function updateQrPath(int $id, string $path): void
     {
         $stmt = Database::pdo()->prepare('UPDATE qr_links SET qr_path = :qr_path, updated_at = NOW() WHERE id = :id');
         $stmt->execute(['id' => $id, 'qr_path' => $path]);
     }
 
+    /**
+     * Finds a link by database identifier.
+     *
+     * @return array<string, mixed>|null
+     */
     public static function find(int $id): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM qr_links WHERE id = :id LIMIT 1');
@@ -33,6 +58,11 @@ final class Link
         return $stmt->fetch() ?: null;
     }
 
+    /**
+     * Finds a link by short code.
+     *
+     * @return array<string, mixed>|null
+     */
     public static function findByCode(string $code): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM qr_links WHERE short_code = :code LIMIT 1');
@@ -40,6 +70,11 @@ final class Link
         return $stmt->fetch() ?: null;
     }
 
+    /**
+     * Returns paginated gallery items with total page metadata.
+     *
+     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, pages: int}
+     */
     public static function gallery(string $search, string $filter, int $page, int $perPage, bool $includePrivate): array
     {
         $where = ['status = "approved"'];
@@ -83,6 +118,9 @@ final class Link
         ];
     }
 
+    /**
+     * Checks whether a short code already exists.
+     */
     public static function codeExists(string $code, ?int $exceptId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM qr_links WHERE short_code = :code';
@@ -96,6 +134,11 @@ final class Link
         return (int) $stmt->fetchColumn() > 0;
     }
 
+    /**
+     * Lists links by moderation status with click and duplicate metadata.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public static function listByStatus(string $status): array
     {
         $stmt = Database::pdo()->prepare(
@@ -111,6 +154,11 @@ final class Link
         return $stmt->fetchAll();
     }
 
+    /**
+     * Returns aggregate dashboard statistics.
+     *
+     * @return array{pending: int, approved: int, rejected: int, blocked: int, clicks: int}
+     */
     public static function stats(): array
     {
         $stmt = Database::pdo()->prepare(
@@ -133,6 +181,9 @@ final class Link
         ]);
     }
 
+    /**
+     * Counts recent submissions from the same IP hash.
+     */
     public static function countRecentByIpHash(string $ipHash): int
     {
         $stmt = Database::pdo()->prepare(
@@ -142,6 +193,9 @@ final class Link
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * Counts daily submissions from the same IP hash.
+     */
     public static function countDailyByIpHash(string $ipHash): int
     {
         $stmt = Database::pdo()->prepare(
@@ -151,6 +205,11 @@ final class Link
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * Updates editable link fields.
+     *
+     * @param array<string, mixed> $data Link fields.
+     */
     public static function update(int $id, array $data): void
     {
         $stmt = Database::pdo()->prepare(
@@ -162,6 +221,11 @@ final class Link
         $stmt->execute($data + ['id' => $id]);
     }
 
+    /**
+     * Sets the moderation status and returns the updated row.
+     *
+     * @return array<string, mixed>|null
+     */
     public static function setStatus(int $id, string $status): ?array
     {
         $fields = [
@@ -177,6 +241,9 @@ final class Link
         return self::find($id);
     }
 
+    /**
+     * Deletes a link and removes its generated QR image when present.
+     */
     public static function delete(int $id): void
     {
         $link = self::find($id);
