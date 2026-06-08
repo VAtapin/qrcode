@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="<?= e(app_locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,10 +29,13 @@
         <?php else: ?>
             <a href="/login"><?= e(__('nav.login')) ?></a>
         <?php endif; ?>
-        <span class="lang-switch">
+        <span class="language-picker" aria-label="Language">
+            <span class="language-current">🌐 <?= e(strtoupper(app_locale())) ?></span>
+            <span class="language-options">
             <?php foreach (supported_locales() as $locale): ?>
                 <a class="<?= app_locale() === $locale ? 'active' : '' ?>" href="<?= e(localized_path('', $locale)) ?>"><?= e(strtoupper($locale)) ?></a>
             <?php endforeach; ?>
+            </span>
         </span>
     </nav>
 </header>
