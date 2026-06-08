@@ -17,11 +17,13 @@ final class PublicController
     public function gallery(): void
     {
         $search = trim((string) ($_GET['search'] ?? ''));
+        $isAdmin = !empty($_SESSION['admin_id']);
         $filter = (string) ($_GET['filter'] ?? 'all');
-        $filter = in_array($filter, ['all', 'public', 'latest'], true) ? $filter : 'all';
+        $allowedFilters = $isAdmin ? ['all', 'public', 'private', 'latest'] : ['all', 'latest'];
+        $filter = in_array($filter, $allowedFilters, true) ? $filter : 'all';
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = 20;
-        $gallery = Link::gallery($search, $filter, $page, $perPage);
+        $gallery = Link::gallery($search, $filter, $page, $perPage, $isAdmin);
 
         view('public/gallery', [
             'title' => 'Галерея QR-кодов',
@@ -31,6 +33,7 @@ final class PublicController
             'pages' => $gallery['pages'],
             'search' => $search,
             'filter' => $filter,
+            'isAdmin' => $isAdmin,
         ]);
     }
 

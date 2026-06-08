@@ -4,7 +4,7 @@
         <a href="/admin">К статистике</a>
     </div>
     <div class="table-wrap">
-        <table>
+        <table class="admin-table">
             <thead>
             <tr>
                 <th>ID</th>
@@ -21,16 +21,20 @@
                 <tr>
                     <td><?= e((string) $link['id']) ?></td>
                     <td><code><?= e($link['short_code']) ?></code></td>
-                    <td>
+                    <td class="wrap-cell">
                         <?= e($link['title']) ?>
                         <?php if ((int) $link['duplicates'] > 0): ?>
                             <span class="badge">дубликат URL</span>
                         <?php endif; ?>
                         <?php if ((int) $link['is_public'] === 1): ?>
                             <span class="badge green">публичная</span>
+                        <?php else: ?>
+                            <span class="badge">приватная</span>
                         <?php endif; ?>
                     </td>
-                    <td><a href="<?= e($link['target_url']) ?>" rel="noreferrer" target="_blank"><?= e($link['target_url']) ?></a></td>
+                    <td class="url-cell">
+                        <a href="<?= e($link['target_url']) ?>" rel="noreferrer" target="_blank"><?= e($link['target_url']) ?></a>
+                    </td>
                     <td><?php if (!empty($link['qr_path'])): ?><img class="qr" src="/storage/<?= e($link['qr_path']) ?>" alt="QR"><?php endif; ?></td>
                     <td>
                         <?= e((string) $link['click_count']) ?><br>

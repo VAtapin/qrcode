@@ -40,10 +40,18 @@ final class Link
         return $stmt->fetch() ?: null;
     }
 
-    public static function gallery(string $search, string $filter, int $page, int $perPage): array
+    public static function gallery(string $search, string $filter, int $page, int $perPage, bool $includePrivate): array
     {
-        $where = ['status = "approved"', 'is_public = 1'];
+        $where = ['status = "approved"'];
         $params = [];
+
+        if (!$includePrivate) {
+            $where[] = 'is_public = 1';
+        } elseif ($filter === 'public') {
+            $where[] = 'is_public = 1';
+        } elseif ($filter === 'private') {
+            $where[] = 'is_public = 0';
+        }
 
         if ($search !== '') {
             $where[] = '(LOWER(title) LIKE :search OR LOWER(short_code) LIKE :search)';
