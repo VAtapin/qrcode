@@ -27,6 +27,8 @@ return [
     ],
     'mail' => [
         'from' => 'no-reply@example.com',
+        'from_name' => 'Q to me',
+        'subject_prefix' => 'Q to me',
         'admin_to' => '',
         'smtp' => [
             'host' => '',

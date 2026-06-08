@@ -244,6 +244,7 @@ final class MailService
             return;
         }
 
+        $subject = $this->subjectLine($subject);
         $smtp = config('mail.smtp', []);
         if (empty($smtp['host'])) {
             $this->log($to, $subject, $body);
@@ -285,7 +286,7 @@ final class MailService
         }
 
         $from = config('mail.from', 'no-reply@example.com');
-        $fromName = config('app.name', 'Q to me');
+        $fromName = config('mail.from_name', 'Q to me');
 
         $mail->setFrom($from, $fromName);
         $mail->addAddress($to);
@@ -303,6 +304,19 @@ final class MailService
         }
         $mail->AltBody = $body;
         $mail->send();
+    }
+
+    /**
+     * Adds the configured service prefix to message subjects.
+     */
+    private function subjectLine(string $subject): string
+    {
+        $prefix = trim((string) config('mail.subject_prefix', 'Q to me'));
+        if ($prefix === '' || str_starts_with($subject, $prefix)) {
+            return $subject;
+        }
+
+        return $prefix . ' - ' . $subject;
     }
 
     /**

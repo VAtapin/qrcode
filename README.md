@@ -97,6 +97,8 @@
 ```php
 'mail' => [
     'from' => 'your-account@gmail.com',
+    'from_name' => 'Q to me',
+    'subject_prefix' => 'Q to me',
     'admin_to' => 'admin@example.com',
     'smtp' => [
         'host' => 'smtp.gmail.com',
@@ -111,6 +113,7 @@
 Для Gmail нужен пароль приложения. В аккаунте Google включите двухэтапную проверку, создайте App Password и вставьте его в конфиг. Google показывает пароль группами вроде `dlni ixzt jkrj dowc`; в конфиг лучше писать без пробелов: `dlniixztjkrjdowc`.
 
 `admin_to` получает письмо, когда создан новый QR-код.
+`from_name` — имя отправителя, которое видно в почтовом клиенте. `subject_prefix` добавляется к теме письма, например `Q to me - QR-Code freigegeben`.
 
 ## Проверка почты
 
