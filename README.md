@@ -112,7 +112,7 @@ Most public-facing settings can also be edited in `/admin/settings`, including:
 - administrator notification e-mail;
 - e-mail sender name;
 - contact e-mail for legal pages;
-- Impressum address;
+- phone and address for legal pages;
 - Impressum and privacy text for the current administrator language;
 - public gallery visibility.
 

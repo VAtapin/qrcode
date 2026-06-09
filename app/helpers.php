@@ -49,6 +49,30 @@ function setting(string $key, mixed $default = null): mixed
 }
 
 /**
+ * Returns the default legal provider name.
+ */
+function legal_default_provider(): string
+{
+    return "Bible Media Agentur\nVolodymyr Atapin, Inhaber";
+}
+
+/**
+ * Returns the default Impressum address.
+ */
+function legal_default_impressum_address(): string
+{
+    return "Neuhofer Str. 7\n16278 Angermünde\nDeutschland";
+}
+
+/**
+ * Returns the default legal contact phone number.
+ */
+function legal_default_phone(): string
+{
+    return '+49 3333 88 57 212';
+}
+
+/**
  * Builds the fallback Impressum text for a locale.
  */
 function legal_default_impressum_text(?string $locale = null): string
@@ -68,13 +92,17 @@ function legal_default_privacy_text(?string $locale = null): string
 
     return implode("\n\n", [
         __('privacy.purpose', [], $locale),
+        __('privacy.legal_basis', [], $locale),
+        __('privacy.public_gallery', [], $locale),
         __('privacy.logs', [], $locale),
         __('privacy.mail', [], $locale),
         __('privacy.cookies', [], $locale),
+        __('privacy.retention', [], $locale),
+        __('privacy.recipients', [], $locale),
         __('privacy.rights', [], $locale),
+        __('privacy.authority', [], $locale),
         __('privacy.contact', ['email' => $email], $locale),
-        __('privacy.implementation_note', ['maker' => 'Bible Media Agentur'], $locale),
-        __('privacy.note', [], $locale),
+        __('privacy.automation', [], $locale),
     ]);
 }
 

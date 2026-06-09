@@ -30,6 +30,10 @@
             <?= e(__('settings.contact_email')) ?>
             <input name="legal_contact_email" type="email" required value="<?= e($settings['legal.contact_email'] ?? 'atapin@gmail.com') ?>">
         </label>
+        <label>
+            <?= e(__('settings.phone')) ?>
+            <input name="legal_phone" value="<?= e($settings['legal.phone'] ?? legal_default_phone()) ?>">
+        </label>
         <div class="settings-section">
             <h2><?= e(__('settings.legal_pages')) ?></h2>
             <p class="muted"><?= e(__('settings.legal_language_hint', ['locale' => strtoupper($legalLocale ?? app_locale())])) ?></p>

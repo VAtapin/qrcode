@@ -1,6 +1,7 @@
 <?php
 $contactEmail = (string) setting('legal.contact_email', 'atapin@gmail.com');
-$address = trim((string) setting('legal.impressum_address', ''));
+$phone = trim((string) setting('legal.phone', legal_default_phone()));
+$address = trim((string) setting('legal.impressum_address', legal_default_impressum_address()));
 $impressumText = trim((string) setting('legal.impressum_text.' . app_locale(), legal_default_impressum_text()));
 if ($impressumText === '') {
     $impressumText = legal_default_impressum_text();
@@ -13,12 +14,18 @@ if ($impressumText === '') {
     <dl class="impressum-list">
         <div>
             <dt><?= e(__('legal.private_provider')) ?></dt>
-            <dd>Volodymyr Atapin</dd>
+            <dd><?= nl2br(e(legal_default_provider())) ?></dd>
         </div>
         <div>
             <dt><?= e(__('legal.email')) ?></dt>
             <dd><a href="mailto:<?= e($contactEmail) ?>"><?= e($contactEmail) ?></a></dd>
         </div>
+        <?php if ($phone !== ''): ?>
+            <div>
+                <dt><?= e(__('legal.phone')) ?></dt>
+                <dd><?= e($phone) ?></dd>
+            </div>
+        <?php endif; ?>
         <?php if ($address !== ''): ?>
             <div>
                 <dt><?= e(__('legal.address')) ?></dt>
@@ -28,6 +35,10 @@ if ($impressumText === '') {
         <div>
             <dt><?= e(__('legal.technical_implementation')) ?></dt>
             <dd><a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a></dd>
+        </div>
+        <div>
+            <dt><?= e(__('legal.represented_by')) ?></dt>
+            <dd>Volodymyr Atapin, Inhaber</dd>
         </div>
     </dl>
 
