@@ -60,7 +60,10 @@ final class AdminController
         $settings = [
             'mail.admin_to' => setting('mail.admin_to', ''),
             'mail.from_name' => setting('mail.from_name', 'Q to me'),
-            'legal.contact_email' => setting('legal.contact_email', 'atapin@gmail.com'),
+            'legal.provider' => setting('legal.provider', legal_default_provider()),
+            'legal.represented_by' => setting('legal.represented_by', ''),
+            'legal.content_responsible' => setting('legal.content_responsible', ''),
+            'legal.contact_email' => setting('legal.contact_email', legal_default_contact_email()),
             'legal.phone' => setting('legal.phone', legal_default_phone()),
             'legal.impressum_address' => setting('legal.impressum_address', legal_default_impressum_address()),
             'legal.impressum_text' => setting(
@@ -93,6 +96,9 @@ final class AdminController
         $action = (string) ($_POST['settings_action'] ?? 'save');
         $adminTo = trim((string) ($_POST['mail_admin_to'] ?? ''));
         $fromName = trim((string) ($_POST['mail_from_name'] ?? 'Q to me'));
+        $provider = trim((string) ($_POST['legal_provider'] ?? ''));
+        $representedBy = trim((string) ($_POST['legal_represented_by'] ?? ''));
+        $contentResponsible = trim((string) ($_POST['legal_content_responsible'] ?? ''));
         $contactEmail = trim((string) ($_POST['legal_contact_email'] ?? ''));
         $phone = trim((string) ($_POST['legal_phone'] ?? ''));
         $impressumAddress = trim((string) ($_POST['legal_impressum_address'] ?? ''));
@@ -118,7 +124,10 @@ final class AdminController
         $settings = [
             'mail.admin_to' => $adminTo,
             'mail.from_name' => $fromName,
-            'legal.contact_email' => $contactEmail !== '' ? $contactEmail : 'atapin@gmail.com',
+            'legal.provider' => $provider,
+            'legal.represented_by' => $representedBy,
+            'legal.content_responsible' => $contentResponsible,
+            'legal.contact_email' => $contactEmail !== '' ? $contactEmail : legal_default_contact_email(),
             'legal.phone' => $phone !== '' ? $phone : legal_default_phone(),
             'legal.impressum_address' => $impressumAddress !== '' ? $impressumAddress : legal_default_impressum_address(),
             'gallery.enabled' => $galleryEnabled,

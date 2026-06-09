@@ -27,8 +27,20 @@
             <input name="mail_from_name" required maxlength="120" value="<?= e($settings['mail.from_name'] ?? 'Q to me') ?>">
         </label>
         <label>
+            <?= e(__('settings.legal_provider')) ?>
+            <textarea name="legal_provider" rows="2"><?= e($settings['legal.provider'] ?? '') ?></textarea>
+        </label>
+        <label>
+            <?= e(__('settings.represented_by')) ?>
+            <input name="legal_represented_by" value="<?= e($settings['legal.represented_by'] ?? '') ?>">
+        </label>
+        <label>
+            <?= e(__('settings.content_responsible')) ?>
+            <textarea name="legal_content_responsible" rows="2"><?= e($settings['legal.content_responsible'] ?? '') ?></textarea>
+        </label>
+        <label>
             <?= e(__('settings.contact_email')) ?>
-            <input name="legal_contact_email" type="email" required value="<?= e($settings['legal.contact_email'] ?? 'atapin@gmail.com') ?>">
+            <input name="legal_contact_email" type="email" required value="<?= e($settings['legal.contact_email'] ?? legal_default_contact_email()) ?>">
         </label>
         <label>
             <?= e(__('settings.phone')) ?>
