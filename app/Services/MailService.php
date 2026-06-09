@@ -153,7 +153,7 @@ final class MailService
      */
     public function sendAdminNewLink(array $link): void
     {
-        $adminEmail = (string) config('mail.admin_to', '');
+        $adminEmail = (string) setting('mail.admin_to', '');
         if ($adminEmail === '' || !filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
             return;
         }
@@ -286,7 +286,7 @@ final class MailService
         }
 
         $from = config('mail.from', 'no-reply@example.com');
-        $fromName = config('mail.from_name', 'Q to me');
+        $fromName = setting('mail.from_name', 'Q to me');
 
         $mail->setFrom($from, $fromName);
         $mail->addAddress($to);
@@ -311,7 +311,7 @@ final class MailService
      */
     private function subjectLine(string $subject): string
     {
-        $prefix = trim((string) config('mail.subject_prefix', 'Q to me'));
+        $prefix = trim((string) setting('mail.from_name', 'Q to me'));
         if ($prefix === '' || str_starts_with($subject, $prefix)) {
             return $subject;
         }

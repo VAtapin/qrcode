@@ -31,6 +31,24 @@ function config(string $key, mixed $default = null): mixed
 }
 
 /**
+ * Reads an editable application setting with config fallback.
+ */
+function setting(string $key, mixed $default = null): mixed
+{
+    static $settings;
+
+    if ($settings === null) {
+        try {
+            $settings = \App\Models\AppSetting::all();
+        } catch (\Throwable) {
+            $settings = [];
+        }
+    }
+
+    return array_key_exists($key, $settings) ? $settings[$key] : config($key, $default);
+}
+
+/**
  * Returns all supported interface locales.
  *
  * @return array<int, string>

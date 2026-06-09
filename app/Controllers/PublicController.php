@@ -38,6 +38,13 @@ final class PublicController
         $filter = in_array($filter, $allowedFilters, true) ? $filter : 'all';
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = 20;
+        if (!$isAdmin && (string) setting('gallery.enabled', '1') !== '1') {
+            view('public/gallery_disabled', [
+                'title' => __('nav.gallery'),
+            ]);
+            return;
+        }
+
         $gallery = Link::gallery($search, $filter, $page, $perPage, $isAdmin);
 
         view('public/gallery', [

@@ -9,7 +9,7 @@
         </div>
         <div>
             <dt><?= e(__('legal.email')) ?></dt>
-            <dd><a href="mailto:atapin@gmail.com">atapin@gmail.com</a></dd>
+            <dd><a href="mailto:<?= e(setting('legal.contact_email', 'atapin@gmail.com')) ?>"><?= e(setting('legal.contact_email', 'atapin@gmail.com')) ?></a></dd>
         </div>
         <div>
             <dt><?= e(__('legal.technical_implementation')) ?></dt>

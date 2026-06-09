@@ -20,6 +20,12 @@ return [
         'default_locale' => 'de',
         'locales' => ['de', 'ru', 'en'],
     ],
+    'gallery' => [
+        'enabled' => '1',
+    ],
+    'legal' => [
+        'contact_email' => 'atapin@gmail.com',
+    ],
     'db' => [
         'dsn' => 'mysql:host=127.0.0.1;dbname=qrcode;charset=utf8mb4',
         'user' => 'root',
@@ -28,7 +34,6 @@ return [
     'mail' => [
         'from' => 'no-reply@example.com',
         'from_name' => 'Q to me',
-        'subject_prefix' => 'Q to me',
         'admin_to' => '',
         'smtp' => [
             'host' => '',

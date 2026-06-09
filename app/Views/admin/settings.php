@@ -17,6 +17,22 @@
                 <?php endforeach; ?>
             </select>
         </label>
+        <label>
+            <?= e(__('settings.admin_email')) ?>
+            <input name="mail_admin_to" type="email" value="<?= e($settings['mail.admin_to'] ?? '') ?>">
+        </label>
+        <label>
+            <?= e(__('settings.mail_from_name')) ?>
+            <input name="mail_from_name" required maxlength="120" value="<?= e($settings['mail.from_name'] ?? 'Q to me') ?>">
+        </label>
+        <label>
+            <?= e(__('settings.contact_email')) ?>
+            <input name="legal_contact_email" type="email" required value="<?= e($settings['legal.contact_email'] ?? 'atapin@gmail.com') ?>">
+        </label>
+        <label class="check">
+            <input type="checkbox" name="gallery_enabled" value="1" <?= ($settings['gallery.enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
+            <span><?= e(__('settings.gallery_enabled')) ?></span>
+        </label>
         <button class="primary" type="submit"><?= e(__('button.save')) ?></button>
     </form>
 </section>

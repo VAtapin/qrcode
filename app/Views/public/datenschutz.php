@@ -5,7 +5,7 @@
     <h2><?= e(__('privacy.controller')) ?></h2>
     <p>
         Volodymyr Atapin<br>
-        <a href="mailto:atapin@gmail.com">atapin@gmail.com</a>
+        <a href="mailto:<?= e(setting('legal.contact_email', 'atapin@gmail.com')) ?>"><?= e(setting('legal.contact_email', 'atapin@gmail.com')) ?></a>
     </p>
 
     <h2><?= e(__('privacy.purpose_title')) ?></h2>
@@ -24,7 +24,7 @@
     <p><?= e(__('privacy.rights')) ?></p>
 
     <h2><?= e(__('privacy.contact_title')) ?></h2>
-    <p><?= e(__('privacy.contact', ['email' => 'atapin@gmail.com'])) ?></p>
+    <p><?= e(__('privacy.contact', ['email' => setting('legal.contact_email', 'atapin@gmail.com')])) ?></p>
 
     <h2><?= e(__('legal.technical_implementation')) ?></h2>
     <p>

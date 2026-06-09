@@ -17,6 +17,7 @@ use App\Core\Csrf;
 use App\Middleware\AuthMiddleware;
 use App\Models\Admin;
 use App\Models\AdminLog;
+use App\Models\AppSetting;
 use App\Models\BlacklistWord;
 use App\Models\Link;
 use App\Services\MailService;
@@ -58,6 +59,12 @@ final class AdminController
         view('admin/settings', [
             'title' => __('admin.settings'),
             'admin' => $admin,
+            'settings' => [
+                'mail.admin_to' => setting('mail.admin_to', ''),
+                'mail.from_name' => setting('mail.from_name', 'Q to me'),
+                'legal.contact_email' => setting('legal.contact_email', 'atapin@gmail.com'),
+                'gallery.enabled' => setting('gallery.enabled', '1'),
+            ],
         ]);
     }
 
@@ -68,12 +75,38 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         $locale = (string) ($_POST['locale'] ?? default_locale());
-        if (!Csrf::verify() || !in_array($locale, supported_locales(), true)) {
+        $adminTo = trim((string) ($_POST['mail_admin_to'] ?? ''));
+        $fromName = trim((string) ($_POST['mail_from_name'] ?? 'Q to me'));
+        $contactEmail = trim((string) ($_POST['legal_contact_email'] ?? ''));
+        $galleryEnabled = isset($_POST['gallery_enabled']) ? '1' : '0';
+
+        $emailError = (
+            ($adminTo !== '' && !filter_var($adminTo, FILTER_VALIDATE_EMAIL))
+            || ($contactEmail !== '' && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
+        );
+
+        if (
+            !Csrf::verify()
+            || !in_array($locale, supported_locales(), true)
+            || $fromName === ''
+            || $emailError
+        ) {
             flash('error', __('flash.invalid_action'));
             redirect('/admin/settings');
         }
 
         Admin::updateLocale((int) $_SESSION['admin_id'], $locale);
+        try {
+            AppSetting::setMany([
+                'mail.admin_to' => $adminTo,
+                'mail.from_name' => $fromName,
+                'legal.contact_email' => $contactEmail !== '' ? $contactEmail : 'atapin@gmail.com',
+                'gallery.enabled' => $galleryEnabled,
+            ]);
+        } catch (\Throwable) {
+            flash('error', __('flash.save_failed'));
+            redirect('/admin/settings');
+        }
         $_SESSION['admin_locale'] = $locale;
         app_locale($locale);
         flash('success', __('flash.settings_saved'));

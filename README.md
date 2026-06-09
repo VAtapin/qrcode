@@ -76,6 +76,12 @@
    mysql -u DB_USER -p DB_NAME < database/update_admin_locale.sql
    ```
 
+   Для настроек сайта из админки примените:
+
+   ```bash
+   mysql -u DB_USER -p DB_NAME < database/update_app_settings.sql
+   ```
+
 6. Создайте первого администратора:
 
    ```bash
@@ -98,7 +104,6 @@
 'mail' => [
     'from' => 'your-account@gmail.com',
     'from_name' => 'Q to me',
-    'subject_prefix' => 'Q to me',
     'admin_to' => 'admin@example.com',
     'smtp' => [
         'host' => 'smtp.gmail.com',
@@ -113,7 +118,7 @@
 Для Gmail нужен пароль приложения. В аккаунте Google включите двухэтапную проверку, создайте App Password и вставьте его в конфиг. Google показывает пароль группами вроде `dlni ixzt jkrj dowc`; в конфиг лучше писать без пробелов: `dlniixztjkrjdowc`.
 
 `admin_to` получает письмо, когда создан новый QR-код.
-`from_name` — имя отправителя, которое видно в почтовом клиенте. `subject_prefix` добавляется к теме письма, например `Q to me - QR-Code freigegeben`.
+`from_name` — имя отправителя, которое видно в почтовом клиенте. Оно же используется как начало темы письма, например `Q to me - QR-Code freigegeben`.
 
 ## Проверка почты
 
@@ -172,6 +177,7 @@ https://q-2.me/abc123
 
 При создании QR-кода выбранный язык сохраняется в поле `locale`, чтобы последующие e-mail уведомления отправлялись пользователю на том же языке.
 Язык администратора сохраняется отдельно в `/admin/settings` и используется для админки и уведомлений администратору.
+В `/admin/settings` также редактируются e-mail администратора, имя отправителя писем, контактный e-mail для Impressum/Datenschutz и отображение публичной галереи.
 
 ## Чёрный список
 

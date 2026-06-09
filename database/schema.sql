@@ -7,6 +7,12 @@ CREATE TABLE admins (
   last_login_at DATETIME NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE app_settings (
+  setting_key VARCHAR(120) NOT NULL PRIMARY KEY,
+  setting_value TEXT NOT NULL,
+  updated_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE qr_links (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   short_code VARCHAR(50) NOT NULL UNIQUE,
