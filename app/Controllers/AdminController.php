@@ -56,27 +56,27 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         $admin = Admin::find((int) $_SESSION['admin_id']);
+        $legalLocale = app_locale();
         $settings = [
             'mail.admin_to' => setting('mail.admin_to', ''),
             'mail.from_name' => setting('mail.from_name', 'Q to me'),
             'legal.contact_email' => setting('legal.contact_email', 'atapin@gmail.com'),
             'legal.impressum_address' => setting('legal.impressum_address', ''),
+            'legal.impressum_text' => setting(
+                'legal.impressum_text.' . $legalLocale,
+                legal_default_impressum_text($legalLocale)
+            ),
+            'legal.privacy_text' => setting(
+                'legal.privacy_text.' . $legalLocale,
+                legal_default_privacy_text($legalLocale)
+            ),
             'gallery.enabled' => setting('gallery.enabled', '1'),
         ];
-        foreach (supported_locales() as $locale) {
-            $settings['legal.impressum_text.' . $locale] = setting(
-                'legal.impressum_text.' . $locale,
-                legal_default_impressum_text($locale)
-            );
-            $settings['legal.privacy_text.' . $locale] = setting(
-                'legal.privacy_text.' . $locale,
-                legal_default_privacy_text($locale)
-            );
-        }
 
         view('admin/settings', [
             'title' => __('admin.settings'),
             'admin' => $admin,
+            'legalLocale' => $legalLocale,
             'settings' => $settings,
         ]);
     }
@@ -88,6 +88,7 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         $locale = (string) ($_POST['locale'] ?? default_locale());
+        $legalLocale = (string) ($_POST['legal_locale'] ?? app_locale());
         $adminTo = trim((string) ($_POST['mail_admin_to'] ?? ''));
         $fromName = trim((string) ($_POST['mail_from_name'] ?? 'Q to me'));
         $contactEmail = trim((string) ($_POST['legal_contact_email'] ?? ''));
@@ -102,6 +103,7 @@ final class AdminController
         if (
             !Csrf::verify()
             || !in_array($locale, supported_locales(), true)
+            || !in_array($legalLocale, supported_locales(), true)
             || $fromName === ''
             || $emailError
         ) {
@@ -116,13 +118,9 @@ final class AdminController
             'legal.contact_email' => $contactEmail !== '' ? $contactEmail : 'atapin@gmail.com',
             'legal.impressum_address' => $impressumAddress,
             'gallery.enabled' => $galleryEnabled,
+            'legal.impressum_text.' . $legalLocale => trim((string) ($_POST['legal_impressum_text'] ?? '')),
+            'legal.privacy_text.' . $legalLocale => trim((string) ($_POST['legal_privacy_text'] ?? '')),
         ];
-        $impressumText = is_array($_POST['legal_impressum_text'] ?? null) ? $_POST['legal_impressum_text'] : [];
-        $privacyText = is_array($_POST['legal_privacy_text'] ?? null) ? $_POST['legal_privacy_text'] : [];
-        foreach (supported_locales() as $supportedLocale) {
-            $settings['legal.impressum_text.' . $supportedLocale] = trim((string) ($impressumText[$supportedLocale] ?? ''));
-            $settings['legal.privacy_text.' . $supportedLocale] = trim((string) ($privacyText[$supportedLocale] ?? ''));
-        }
 
         try {
             AppSetting::setMany($settings);

@@ -70,6 +70,7 @@ return [
     'settings.mail_from_name' => 'Absendername der E-Mails',
     'settings.contact_email' => 'Kontakt-E-Mail für Impressum und Datenschutz',
     'settings.legal_pages' => 'Rechtliche Seiten',
+    'settings.legal_language_hint' => 'Sie bearbeiten die Rechtstexte für :locale. Um eine andere Sprache zu bearbeiten, oben die Administrationssprache ändern und speichern.',
     'settings.impressum_address' => 'Adresse für das Impressum',
     'settings.impressum_text' => 'Impressum-Text',
     'settings.privacy_text' => 'Datenschutz-Text',

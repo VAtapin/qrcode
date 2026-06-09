@@ -7,6 +7,7 @@
 
     <form method="post" action="/admin/settings" class="form">
         <?= \App\Core\Csrf::field() ?>
+        <input type="hidden" name="legal_locale" value="<?= e($legalLocale ?? app_locale()) ?>">
         <label>
             <?= e(__('admin.language')) ?>
             <select name="locale" required>
@@ -31,20 +32,19 @@
         </label>
         <div class="settings-section">
             <h2><?= e(__('settings.legal_pages')) ?></h2>
+            <p class="muted"><?= e(__('settings.legal_language_hint', ['locale' => strtoupper($legalLocale ?? app_locale())])) ?></p>
             <label>
                 <?= e(__('settings.impressum_address')) ?>
                 <textarea name="legal_impressum_address" rows="3"><?= e($settings['legal.impressum_address'] ?? '') ?></textarea>
             </label>
-            <?php foreach (supported_locales() as $locale): ?>
-                <label>
-                    <?= e(__('settings.impressum_text')) ?> (<?= e(strtoupper($locale)) ?>)
-                    <textarea name="legal_impressum_text[<?= e($locale) ?>]" rows="7"><?= e($settings['legal.impressum_text.' . $locale] ?? '') ?></textarea>
-                </label>
-                <label>
-                    <?= e(__('settings.privacy_text')) ?> (<?= e(strtoupper($locale)) ?>)
-                    <textarea name="legal_privacy_text[<?= e($locale) ?>]" rows="9"><?= e($settings['legal.privacy_text.' . $locale] ?? '') ?></textarea>
-                </label>
-            <?php endforeach; ?>
+            <label>
+                <?= e(__('settings.impressum_text')) ?> (<?= e(strtoupper($legalLocale ?? app_locale())) ?>)
+                <textarea name="legal_impressum_text" rows="7"><?= e($settings['legal.impressum_text'] ?? '') ?></textarea>
+            </label>
+            <label>
+                <?= e(__('settings.privacy_text')) ?> (<?= e(strtoupper($legalLocale ?? app_locale())) ?>)
+                <textarea name="legal_privacy_text" rows="9"><?= e($settings['legal.privacy_text'] ?? '') ?></textarea>
+            </label>
         </div>
         <label class="check">
             <input type="checkbox" name="gallery_enabled" value="1" <?= ($settings['gallery.enabled'] ?? '1') === '1' ? 'checked' : '' ?>>

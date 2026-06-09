@@ -70,6 +70,7 @@ return [
     'settings.mail_from_name' => 'E-mail sender name',
     'settings.contact_email' => 'Contact e-mail for Impressum and privacy',
     'settings.legal_pages' => 'Legal pages',
+    'settings.legal_language_hint' => 'You are editing legal texts for :locale. To edit another language, change the administrator language above and save.',
     'settings.impressum_address' => 'Address for Impressum',
     'settings.impressum_text' => 'Impressum text',
     'settings.privacy_text' => 'Privacy text',

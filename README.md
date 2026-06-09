@@ -113,7 +113,7 @@ Most public-facing settings can also be edited in `/admin/settings`, including:
 - e-mail sender name;
 - contact e-mail for legal pages;
 - Impressum address;
-- Impressum and privacy text for each language;
+- Impressum and privacy text for the current administrator language;
 - public gallery visibility.
 
 These editable settings are stored in the `app_settings` database table.
@@ -218,6 +218,6 @@ Public legal pages:
 /datenschutz
 ```
 
-The Impressum address, Impressum text, and privacy text are editable in `/admin/settings` and stored in the database. Texts are maintained separately for German, Russian, and English.
+The Impressum address, Impressum text, and privacy text are editable in `/admin/settings` and stored in the database. Legal texts are maintained separately for German, Russian, and English. The settings page shows one language at a time; change the administrator language and save to edit another language.
 
 Review the legal text before publishing and adapt it to your hosting provider, retention periods, external services, and local legal requirements.

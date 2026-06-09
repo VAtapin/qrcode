@@ -70,6 +70,7 @@ return [
     'settings.mail_from_name' => 'Имя отправителя писем',
     'settings.contact_email' => 'Контактный e-mail для Impressum и Datenschutz',
     'settings.legal_pages' => 'Юридические страницы',
+    'settings.legal_language_hint' => 'Сейчас редактируются юридические тексты для :locale. Чтобы редактировать другой язык, выберите язык администратора выше и сохраните.',
     'settings.impressum_address' => 'Адрес для Impressum',
     'settings.impressum_text' => 'Текст Impressum',
     'settings.privacy_text' => 'Текст Datenschutz',
