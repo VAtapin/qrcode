@@ -218,6 +218,6 @@ Public legal pages:
 /datenschutz
 ```
 
-The Impressum address, Impressum text, and privacy text are editable in `/admin/settings` and stored in the database. Legal texts are maintained separately for German, Russian, and English. The settings page shows one language at a time; change the administrator language and save to edit another language.
+The Impressum address, Impressum text, and privacy text are editable in `/admin/settings` and stored in the database. Legal texts are maintained separately for German, Russian, and English. The settings page shows one language at a time; use the top-right language picker to edit another language. A button in the legal section can restore the project-specific default legal texts for the currently selected language.
 
 Review the legal text before publishing and adapt it to your hosting provider, retention periods, external services, and local legal requirements.

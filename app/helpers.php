@@ -157,6 +157,11 @@ function app_locale(?string $locale = null, bool $persist = true): string
  */
 function detect_locale(string $path): string
 {
+    $queryLocale = $_GET['lang'] ?? '';
+    if (is_string($queryLocale) && in_array($queryLocale, supported_locales(), true)) {
+        return $queryLocale;
+    }
+
     $firstSegment = explode('/', trim($path, '/'))[0] ?? '';
     if (in_array($firstSegment, supported_locales(), true)) {
         return $firstSegment;
@@ -216,6 +221,55 @@ function localized_path(string $path = '', ?string $locale = null): string
     $path = trim($path, '/');
 
     return '/' . $locale . ($path !== '' ? '/' . $path : '');
+}
+
+/**
+ * Builds a URL that switches the current page to another interface locale.
+ */
+function locale_switch_url(string $locale): string
+{
+    $requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+    $path = parse_url($requestUri, PHP_URL_PATH);
+    $queryString = parse_url($requestUri, PHP_URL_QUERY);
+    $path = is_string($path) && $path !== '' ? $path : '/';
+
+    $query = [];
+    if (is_string($queryString) && $queryString !== '') {
+        parse_str($queryString, $query);
+    }
+    unset($query['lang']);
+
+    $trimmed = trim($path, '/');
+    $segments = $trimmed === '' ? [] : explode('/', $trimmed);
+    $first = $segments[0] ?? '';
+
+    if (in_array($first, supported_locales(), true)) {
+        $segments[0] = $locale;
+        $path = '/' . implode('/', $segments);
+    } elseif (locale_path_can_be_prefixed($path)) {
+        $path = localized_path(trim($path, '/'), $locale);
+    } else {
+        $query['lang'] = $locale;
+    }
+
+    $queryString = http_build_query($query);
+
+    return $path . ($queryString !== '' ? '?' . $queryString : '');
+}
+
+/**
+ * Returns whether a public path has localized routes.
+ */
+function locale_path_can_be_prefixed(string $path): bool
+{
+    $path = '/' . trim($path, '/');
+    if ($path === '/') {
+        return true;
+    }
+
+    return in_array($path, ['/new', '/create', '/impressum', '/datenschutz'], true)
+        || str_starts_with($path, '/result/')
+        || str_starts_with($path, '/qr/');
 }
 
 /**

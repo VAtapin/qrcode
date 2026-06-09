@@ -90,6 +90,7 @@ final class AdminController
         AuthMiddleware::requireAdmin();
         $locale = (string) ($_POST['locale'] ?? default_locale());
         $legalLocale = (string) ($_POST['legal_locale'] ?? app_locale());
+        $action = (string) ($_POST['settings_action'] ?? 'save');
         $adminTo = trim((string) ($_POST['mail_admin_to'] ?? ''));
         $fromName = trim((string) ($_POST['mail_from_name'] ?? 'Q to me'));
         $contactEmail = trim((string) ($_POST['legal_contact_email'] ?? ''));
@@ -121,9 +122,14 @@ final class AdminController
             'legal.phone' => $phone !== '' ? $phone : legal_default_phone(),
             'legal.impressum_address' => $impressumAddress !== '' ? $impressumAddress : legal_default_impressum_address(),
             'gallery.enabled' => $galleryEnabled,
-            'legal.impressum_text.' . $legalLocale => trim((string) ($_POST['legal_impressum_text'] ?? '')),
-            'legal.privacy_text.' . $legalLocale => trim((string) ($_POST['legal_privacy_text'] ?? '')),
         ];
+        if ($action === 'load_legal_defaults') {
+            $settings['legal.impressum_text.' . $legalLocale] = legal_default_impressum_text($legalLocale);
+            $settings['legal.privacy_text.' . $legalLocale] = legal_default_privacy_text($legalLocale);
+        } else {
+            $settings['legal.impressum_text.' . $legalLocale] = trim((string) ($_POST['legal_impressum_text'] ?? ''));
+            $settings['legal.privacy_text.' . $legalLocale] = trim((string) ($_POST['legal_privacy_text'] ?? ''));
+        }
 
         try {
             AppSetting::setMany($settings);
@@ -132,8 +138,8 @@ final class AdminController
             redirect('/admin/settings');
         }
         $_SESSION['admin_locale'] = $locale;
-        app_locale($locale);
-        flash('success', __('flash.settings_saved'));
+        app_locale($legalLocale);
+        flash('success', $action === 'load_legal_defaults' ? __('flash.legal_defaults_loaded') : __('flash.settings_saved'));
         redirect('/admin/settings');
     }
 

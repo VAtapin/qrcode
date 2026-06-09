@@ -35,7 +35,7 @@
             <span class="language-options">
             <?php foreach (supported_locales() as $locale): ?>
                 <?php if (app_locale() !== $locale): ?>
-                    <a href="<?= e(localized_path('', $locale)) ?>"><?= e(strtoupper($locale)) ?></a>
+                    <a href="<?= e(locale_switch_url($locale)) ?>"><?= e(strtoupper($locale)) ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
             </span>

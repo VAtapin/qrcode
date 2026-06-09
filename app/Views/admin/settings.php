@@ -54,6 +54,11 @@
             <input type="checkbox" name="gallery_enabled" value="1" <?= ($settings['gallery.enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
             <span><?= e(__('settings.gallery_enabled')) ?></span>
         </label>
-        <button class="primary" type="submit"><?= e(__('button.save')) ?></button>
+        <div class="actions">
+            <button class="primary" type="submit" name="settings_action" value="save"><?= e(__('button.save')) ?></button>
+            <button class="button" type="submit" name="settings_action" value="load_legal_defaults">
+                <?= e(__('settings.load_legal_defaults')) ?>
+            </button>
+        </div>
     </form>
 </section>
