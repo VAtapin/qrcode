@@ -49,6 +49,36 @@ function setting(string $key, mixed $default = null): mixed
 }
 
 /**
+ * Builds the fallback Impressum text for a locale.
+ */
+function legal_default_impressum_text(?string $locale = null): string
+{
+    $locale ??= app_locale();
+
+    return __('legal.private_note', [], $locale);
+}
+
+/**
+ * Builds the fallback privacy text for a locale.
+ */
+function legal_default_privacy_text(?string $locale = null): string
+{
+    $locale ??= app_locale();
+    $email = (string) setting('legal.contact_email', 'atapin@gmail.com');
+
+    return implode("\n\n", [
+        __('privacy.purpose', [], $locale),
+        __('privacy.logs', [], $locale),
+        __('privacy.mail', [], $locale),
+        __('privacy.cookies', [], $locale),
+        __('privacy.rights', [], $locale),
+        __('privacy.contact', ['email' => $email], $locale),
+        __('privacy.implementation_note', ['maker' => 'Bible Media Agentur'], $locale),
+        __('privacy.note', [], $locale),
+    ]);
+}
+
+/**
  * Returns all supported interface locales.
  *
  * @return array<int, string>

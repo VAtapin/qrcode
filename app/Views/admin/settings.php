@@ -1,4 +1,4 @@
-<section class="panel narrow">
+<section class="panel">
     <h1><?= e(__('admin.settings')) ?></h1>
     <p class="muted"><?= e(__('admin.settings_hint')) ?></p>
 
@@ -29,6 +29,23 @@
             <?= e(__('settings.contact_email')) ?>
             <input name="legal_contact_email" type="email" required value="<?= e($settings['legal.contact_email'] ?? 'atapin@gmail.com') ?>">
         </label>
+        <div class="settings-section">
+            <h2><?= e(__('settings.legal_pages')) ?></h2>
+            <label>
+                <?= e(__('settings.impressum_address')) ?>
+                <textarea name="legal_impressum_address" rows="3"><?= e($settings['legal.impressum_address'] ?? '') ?></textarea>
+            </label>
+            <?php foreach (supported_locales() as $locale): ?>
+                <label>
+                    <?= e(__('settings.impressum_text')) ?> (<?= e(strtoupper($locale)) ?>)
+                    <textarea name="legal_impressum_text[<?= e($locale) ?>]" rows="7"><?= e($settings['legal.impressum_text.' . $locale] ?? '') ?></textarea>
+                </label>
+                <label>
+                    <?= e(__('settings.privacy_text')) ?> (<?= e(strtoupper($locale)) ?>)
+                    <textarea name="legal_privacy_text[<?= e($locale) ?>]" rows="9"><?= e($settings['legal.privacy_text.' . $locale] ?? '') ?></textarea>
+                </label>
+            <?php endforeach; ?>
+        </div>
         <label class="check">
             <input type="checkbox" name="gallery_enabled" value="1" <?= ($settings['gallery.enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
             <span><?= e(__('settings.gallery_enabled')) ?></span>

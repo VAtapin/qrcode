@@ -56,15 +56,28 @@ final class AdminController
     {
         AuthMiddleware::requireAdmin();
         $admin = Admin::find((int) $_SESSION['admin_id']);
+        $settings = [
+            'mail.admin_to' => setting('mail.admin_to', ''),
+            'mail.from_name' => setting('mail.from_name', 'Q to me'),
+            'legal.contact_email' => setting('legal.contact_email', 'atapin@gmail.com'),
+            'legal.impressum_address' => setting('legal.impressum_address', ''),
+            'gallery.enabled' => setting('gallery.enabled', '1'),
+        ];
+        foreach (supported_locales() as $locale) {
+            $settings['legal.impressum_text.' . $locale] = setting(
+                'legal.impressum_text.' . $locale,
+                legal_default_impressum_text($locale)
+            );
+            $settings['legal.privacy_text.' . $locale] = setting(
+                'legal.privacy_text.' . $locale,
+                legal_default_privacy_text($locale)
+            );
+        }
+
         view('admin/settings', [
             'title' => __('admin.settings'),
             'admin' => $admin,
-            'settings' => [
-                'mail.admin_to' => setting('mail.admin_to', ''),
-                'mail.from_name' => setting('mail.from_name', 'Q to me'),
-                'legal.contact_email' => setting('legal.contact_email', 'atapin@gmail.com'),
-                'gallery.enabled' => setting('gallery.enabled', '1'),
-            ],
+            'settings' => $settings,
         ]);
     }
 
@@ -78,6 +91,7 @@ final class AdminController
         $adminTo = trim((string) ($_POST['mail_admin_to'] ?? ''));
         $fromName = trim((string) ($_POST['mail_from_name'] ?? 'Q to me'));
         $contactEmail = trim((string) ($_POST['legal_contact_email'] ?? ''));
+        $impressumAddress = trim((string) ($_POST['legal_impressum_address'] ?? ''));
         $galleryEnabled = isset($_POST['gallery_enabled']) ? '1' : '0';
 
         $emailError = (
@@ -96,13 +110,22 @@ final class AdminController
         }
 
         Admin::updateLocale((int) $_SESSION['admin_id'], $locale);
+        $settings = [
+            'mail.admin_to' => $adminTo,
+            'mail.from_name' => $fromName,
+            'legal.contact_email' => $contactEmail !== '' ? $contactEmail : 'atapin@gmail.com',
+            'legal.impressum_address' => $impressumAddress,
+            'gallery.enabled' => $galleryEnabled,
+        ];
+        $impressumText = is_array($_POST['legal_impressum_text'] ?? null) ? $_POST['legal_impressum_text'] : [];
+        $privacyText = is_array($_POST['legal_privacy_text'] ?? null) ? $_POST['legal_privacy_text'] : [];
+        foreach (supported_locales() as $supportedLocale) {
+            $settings['legal.impressum_text.' . $supportedLocale] = trim((string) ($impressumText[$supportedLocale] ?? ''));
+            $settings['legal.privacy_text.' . $supportedLocale] = trim((string) ($privacyText[$supportedLocale] ?? ''));
+        }
+
         try {
-            AppSetting::setMany([
-                'mail.admin_to' => $adminTo,
-                'mail.from_name' => $fromName,
-                'legal.contact_email' => $contactEmail !== '' ? $contactEmail : 'atapin@gmail.com',
-                'gallery.enabled' => $galleryEnabled,
-            ]);
+            AppSetting::setMany($settings);
         } catch (\Throwable) {
             flash('error', __('flash.save_failed'));
             redirect('/admin/settings');

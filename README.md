@@ -1,104 +1,126 @@
 # Q to me
 
-Сервис коротких ссылок и QR-кодов для домена `q-2.me`.
+Q to me is a moderated short-link and QR-code service for `q-2.me`.
 
-Главная страница показывает публичную галерею одобренных QR-кодов. Новые ссылки создаются на `/new`, сразу получают QR-код для скачивания и начинают перенаправлять посетителей после модерации.
+The home page shows a public gallery of approved QR codes. New links are created on `/new`, receive a downloadable QR code immediately, and start redirecting after moderation.
 
-## Возможности
+## Features
 
-- Публичная галерея QR-кодов на `/`.
-- Поиск по названию и короткому коду.
-- Публичные и приватные ссылки.
-- Отдельная страница QR-кода: `/qr/{short_code}`.
-- Скачивание QR-кода сразу после создания.
-- Админка с модерацией: pending, approved, rejected, blocked.
-- Быстрое одобрение ссылки при создании администратором.
-- Уведомления пользователю и администратору по e-mail.
-- Красивые HTML-письма со ссылками, кнопками и QR-кодом в теле письма.
-- Footer с указанием изготовителя Bible Media Agentur, публичные страницы `/impressum` и `/datenschutz`.
-- Мультиязычный интерфейс: немецкий, русский и английский. Язык по умолчанию: `de`.
-- SMTP через PHPMailer, включая Gmail.
-- Fallback в `storage/logs/mail.log`, если SMTP не настроен или отправка не удалась.
-- Защита формы: honeypot, time trap, лимиты по IP-хешу.
-- Редактируемый чёрный список коротких кодов.
-- Статистика переходов: количество и дата последнего перехода.
-- Удаление записи вместе с PNG-файлом QR-кода.
+- Public QR-code gallery with search and pagination.
+- Public and private approved links.
+- Dedicated QR page: `/qr/{short_code}`.
+- QR download immediately after link creation.
+- Admin moderation: pending, approved, rejected, blocked.
+- Optional immediate approval when an administrator creates a link.
+- User and administrator e-mail notifications.
+- HTML e-mails with buttons, links, and an embedded QR-code preview.
+- PHPMailer SMTP support, including Gmail app passwords.
+- Mail log fallback in `storage/logs/mail.log` when SMTP is not configured or delivery fails.
+- Honeypot, time trap, and daily rate limit for public submissions.
+- Editable blacklist for reserved short codes.
+- Basic click statistics with click count, last click date, IP hash, and user agent.
+- Multilingual interface: German, Russian, and English. Default language: German.
+- Editable application settings in the admin panel.
+- Editable Impressum and privacy page texts stored in the database.
 
-## Установка
+## Requirements
 
-1. Загрузите файлы проекта на сервер.
+- PHP 8.2 or newer
+- Composer
+- MySQL or MariaDB
+- Apache with `mod_rewrite`
 
-2. Установите зависимости:
+## Installation
 
-   ```bash
-   composer install --no-dev --optimize-autoloader
-   ```
+Clone or upload the project files to your server.
 
-3. Создайте локальный конфиг:
+Install dependencies:
 
-   ```bash
-   cp config/config.example.php config/config.php
-   ```
+```bash
+composer install --no-dev --optimize-autoloader
+```
 
-4. Откройте `config/config.php` и задайте настройки:
+Create the local configuration file:
 
-   ```php
-   'app' => [
-       'name' => 'Q to me',
-       'base_url' => 'https://q-2.me',
-       'timezone' => 'Europe/Berlin',
-       'secret_salt' => 'long-random-secret',
-   ],
-   'db' => [
-       'dsn' => 'mysql:host=localhost;dbname=DB_NAME;charset=utf8mb4',
-       'user' => 'DB_USER',
-       'password' => 'DB_PASSWORD',
-   ],
-   ```
+```bash
+cp config/config.example.php config/config.php
+```
 
-   `config/config.php` игнорируется Git, поэтому пароли базы и SMTP не перетираются при обновлениях.
+Edit `config/config.php` and set the application URL, database credentials, mail settings, and `secret_salt`.
 
-5. Импортируйте базу данных:
+`config/config.php` is ignored by Git so server passwords and local settings are not overwritten by updates.
 
-   ```bash
-   mysql -u DB_USER -p DB_NAME < database/schema.sql
-   ```
+## Database
 
-   Если база уже существовала до добавления мультиязычности, примените:
+For a fresh installation, import the full schema:
 
-   ```bash
-   mysql -u DB_USER -p DB_NAME < database/update_i18n.sql
-   ```
+```bash
+mysql -u DB_USER -p DB_NAME < database/schema.sql
+```
 
-   Если поле `locale` для QR-ссылок уже было добавлено ранее, а нужно только добавить язык администратора:
+Create the first administrator:
 
-   ```bash
-   mysql -u DB_USER -p DB_NAME < database/update_admin_locale.sql
-   ```
+```bash
+php database/create_admin.php admin strong-password
+```
 
-   Для настроек сайта из админки примените:
+If you are updating an existing database, apply the migration files that match your current state:
 
-   ```bash
-   mysql -u DB_USER -p DB_NAME < database/update_app_settings.sql
-   ```
+```bash
+mysql -u DB_USER -p DB_NAME < database/update_i18n.sql
+mysql -u DB_USER -p DB_NAME < database/update_app_settings.sql
+```
 
-6. Создайте первого администратора:
+`database/update_admin_locale.sql` is available when only the administrator language column is missing.
 
-   ```bash
-   php database/create_admin.php admin strong-password
-   ```
+## Writable Directories
 
-7. Дайте серверу права на запись:
+The web server must be able to write generated QR codes and logs:
 
-   ```bash
-   chmod -R 775 storage/qrcodes storage/logs
-   ```
+```bash
+chmod -R 775 storage/qrcodes storage/logs
+```
 
-8. Лучше направить document root хостинга в папку `public`. Если хостинг смотрит в корень проекта, корневой `.htaccess` перенаправит запросы в `public/index.php` и закроет служебные папки.
+## Web Server
 
-## Настройка SMTP Gmail
+The recommended document root is the `public` directory.
 
-Пример для Gmail:
+If your hosting points to the project root, the root `.htaccess` forwards requests to `public/index.php` and blocks access to private project directories.
+
+## Configuration
+
+Important configuration values:
+
+```php
+'app' => [
+    'name' => 'Q to me',
+    'base_url' => 'https://q-2.me',
+    'timezone' => 'Europe/Berlin',
+    'secret_salt' => 'long-random-secret',
+    'default_locale' => 'de',
+    'locales' => ['de', 'ru', 'en'],
+],
+'db' => [
+    'dsn' => 'mysql:host=localhost;dbname=DB_NAME;charset=utf8mb4',
+    'user' => 'DB_USER',
+    'password' => 'DB_PASSWORD',
+],
+```
+
+Most public-facing settings can also be edited in `/admin/settings`, including:
+
+- administrator notification e-mail;
+- e-mail sender name;
+- contact e-mail for legal pages;
+- Impressum address;
+- Impressum and privacy text for each language;
+- public gallery visibility.
+
+These editable settings are stored in the `app_settings` database table.
+
+## SMTP
+
+Example Gmail configuration:
 
 ```php
 'mail' => [
@@ -115,53 +137,45 @@
 ],
 ```
 
-Для Gmail нужен пароль приложения. В аккаунте Google включите двухэтапную проверку, создайте App Password и вставьте его в конфиг. Google показывает пароль группами вроде `dlni ixzt jkrj dowc`; в конфиг лучше писать без пробелов: `dlniixztjkrjdowc`.
+For Gmail, enable two-step verification and create an app password. Google displays app passwords in groups such as `dlni ixzt jkrj dowc`; use the password without spaces in the configuration.
 
-`admin_to` получает письмо, когда создан новый QR-код.
-`from_name` — имя отправителя, которое видно в почтовом клиенте. Оно же используется как начало темы письма, например `Q to me - QR-Code freigegeben`.
+If SMTP is empty or delivery fails, the message and error are written to:
 
-## Проверка почты
+```text
+storage/logs/mail.log
+```
 
-Если письмо не пришло:
+The application does not break when mail delivery fails.
 
-1. Проверьте, что после обновления выполнен `composer install --no-dev --optimize-autoloader`.
-2. Проверьте настройки `mail.from`, `mail.admin_to`, `mail.smtp.host`, `mail.smtp.username`, `mail.smtp.password`.
-3. Для Gmail убедитесь, что используется именно App Password, а не обычный пароль от аккаунта.
-4. Проверьте лог:
+## Moderation
 
-   ```bash
-   tail -n 80 storage/logs/mail.log
-   ```
+New public submissions receive the `pending` status by default.
 
-Если SMTP пустой или отправка падает, письмо и ошибка записываются в этот лог. Сайт при этом не ломается.
+Statuses:
 
-## Модерация
+- `pending`: waiting for administrator review;
+- `approved`: short link works and the QR page is visible;
+- `rejected`: link was not approved;
+- `blocked`: link was blocked by an administrator.
 
-Новые ссылки получают статус `pending`, если администратор не выбрал “Сразу одобрить”.
+When a status changes, the user receives an e-mail notification if an author e-mail is available.
 
-Статусы:
+## Gallery
 
-- `pending` — ожидает проверки, короткая ссылка не перенаправляет.
-- `approved` — ссылка работает, QR-страница доступна.
-- `rejected` — ссылка отклонена.
-- `blocked` — ссылка заблокирована.
-
-При изменении статуса пользователь получает e-mail, если у ссылки указан e-mail автора.
-
-## Галерея
-
-Гости видят только:
+Guests see only:
 
 ```text
 status = approved
 is_public = 1
 ```
 
-Администратор в галерее может видеть публичные и приватные одобренные ссылки.
+Administrators can also view private approved links in the gallery.
 
-## Языки
+Search works by title and short code. The gallery is paginated to keep it fast.
 
-Доступны три языка:
+## Languages
+
+Public language routes:
 
 ```text
 /de
@@ -169,41 +183,41 @@ is_public = 1
 /en
 ```
 
-Немецкий язык используется по умолчанию. Короткие ссылки остаются короткими и не получают языковой префикс:
+Short links stay short and do not receive a language prefix:
 
 ```text
 https://q-2.me/abc123
 ```
 
-При создании QR-кода выбранный язык сохраняется в поле `locale`, чтобы последующие e-mail уведомления отправлялись пользователю на том же языке.
-Язык администратора сохраняется отдельно в `/admin/settings` и используется для админки и уведомлений администратору.
-В `/admin/settings` также редактируются e-mail администратора, имя отправителя писем, контактный e-mail для Impressum/Datenschutz и отображение публичной галереи.
+The selected language is stored with each submitted QR code and used for future user notifications. The administrator language is stored separately in `/admin/settings`.
 
-## Чёрный список
+## Blacklist
 
-Администратор управляет запрещёнными короткими кодами на:
+Administrators can manage forbidden short-code words at:
 
 ```text
 /admin/blacklist
 ```
 
-Слова из чёрного списка нельзя использовать как короткий код.
+Blacklisted words cannot be used as short codes.
 
-## QR-коды
+## QR Pages
 
-- Результат после создания: `/result/{short_code}`
-- Публичная страница QR: `/qr/{short_code}`
-- Скачивание QR: `/qr/{short_code}/download`
+- Creation result: `/result/{short_code}`
+- Public QR page: `/qr/{short_code}`
+- QR download: `/qr/{short_code}/download`
 
-Скачать QR можно сразу после создания, даже если ссылка ещё ожидает модерации.
+The QR image can be downloaded immediately after creation, even while the link is still waiting for moderation.
 
-## Impressum und Datenschutz
+## Legal Pages
 
-Публичные страницы доступны по адресам:
+Public legal pages:
 
 ```text
 /impressum
 /datenschutz
 ```
 
-Страницу Datenschutz нужно проверить и дополнить данными хостинга, сроками хранения и внешними сервисами, если они используются.
+The Impressum address, Impressum text, and privacy text are editable in `/admin/settings` and stored in the database. Texts are maintained separately for German, Russian, and English.
+
+Review the legal text before publishing and adapt it to your hosting provider, retention periods, external services, and local legal requirements.

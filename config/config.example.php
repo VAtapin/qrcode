@@ -25,6 +25,17 @@ return [
     ],
     'legal' => [
         'contact_email' => 'atapin@gmail.com',
+        'impressum_address' => '',
+        'impressum_text' => [
+            'de' => '',
+            'ru' => '',
+            'en' => '',
+        ],
+        'privacy_text' => [
+            'de' => '',
+            'ru' => '',
+            'en' => '',
+        ],
     ],
     'db' => [
         'dsn' => 'mysql:host=127.0.0.1;dbname=qrcode;charset=utf8mb4',
