@@ -125,8 +125,6 @@ Example Gmail configuration:
 ```php
 'mail' => [
     'from' => 'your-account@gmail.com',
-    'from_name' => 'Q to me',
-    'admin_to' => 'admin@example.com',
     'smtp' => [
         'host' => 'smtp.gmail.com',
         'port' => 587,
@@ -138,6 +136,8 @@ Example Gmail configuration:
 ```
 
 For Gmail, enable two-step verification and create an app password. Google displays app passwords in groups such as `dlni ixzt jkrj dowc`; use the password without spaces in the configuration.
+
+The visible sender name and administrator notification e-mail are edited in `/admin/settings`.
 
 If SMTP is empty or delivery fails, the message and error are written to:
 
