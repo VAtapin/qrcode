@@ -11,7 +11,7 @@ return [
     'nav.settings' => 'Settings',
     'nav.logout' => 'Log out',
     'nav.login' => 'Log in',
-    'footer.maker' => 'Made by',
+    'footer.maker' => 'Powered by',
 
     'gallery.eyebrow' => 'q-2.me',
     'gallery.title' => 'Short links and QR codes that are easy to share',
