@@ -1,9 +1,32 @@
+<?php
+$pageTitle = (string) ($title ?? config('app.name'));
+$metaDescription = __('meta.description');
+$canonicalUrl = url(ltrim((string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'), '/'));
+$socialImageUrl = url('assets/social-preview.png');
+?>
 <!doctype html>
 <html lang="<?= e(app_locale()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($title ?? config('app.name')) ?></title>
+    <title><?= e($pageTitle) ?></title>
+    <meta name="description" content="<?= e($metaDescription) ?>">
+    <link rel="canonical" href="<?= e($canonicalUrl) ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Q to me">
+    <meta property="og:title" content="<?= e($pageTitle) ?>">
+    <meta property="og:description" content="<?= e($metaDescription) ?>">
+    <meta property="og:url" content="<?= e($canonicalUrl) ?>">
+    <meta property="og:image" content="<?= e($socialImageUrl) ?>">
+    <meta property="og:image:secure_url" content="<?= e($socialImageUrl) ?>">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Q to me - q-2.me">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($pageTitle) ?>">
+    <meta name="twitter:description" content="<?= e($metaDescription) ?>">
+    <meta name="twitter:image" content="<?= e($socialImageUrl) ?>">
     <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/assets/style.css">
 </head>

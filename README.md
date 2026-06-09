@@ -64,15 +64,6 @@ Create the first administrator:
 php database/create_admin.php admin strong-password
 ```
 
-If you are updating an existing database, apply the migration files that match your current state:
-
-```bash
-mysql -u DB_USER -p DB_NAME < database/update_i18n.sql
-mysql -u DB_USER -p DB_NAME < database/update_app_settings.sql
-```
-
-`database/update_admin_locale.sql` is available when only the administrator language column is missing.
-
 ## Writable Directories
 
 The web server must be able to write generated QR codes and logs:

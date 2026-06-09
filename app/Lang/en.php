@@ -12,6 +12,7 @@ return [
     'nav.logout' => 'Log out',
     'nav.login' => 'Log in',
     'footer.maker' => 'Powered by',
+    'meta.description' => 'Q to me creates short links and QR codes for q-2.me.',
 
     'gallery.eyebrow' => 'q-2.me',
     'gallery.title' => 'Short links and QR codes that are easy to share',

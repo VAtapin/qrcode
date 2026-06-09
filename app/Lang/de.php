@@ -12,6 +12,7 @@ return [
     'nav.logout' => 'Abmelden',
     'nav.login' => 'Anmelden',
     'footer.maker' => 'Hersteller',
+    'meta.description' => 'Q to me erstellt kurze Links und QR-Codes für q-2.me.',
 
     'gallery.eyebrow' => 'q-2.me',
     'gallery.title' => 'Kurze Links und QR-Codes, die leicht zu teilen sind',
