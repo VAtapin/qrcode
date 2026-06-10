@@ -55,7 +55,8 @@ $socialImageUrl = url('assets/social-preview.png');
         <?php endif; ?>
         <details class="language-picker">
             <summary aria-label="<?= e(locale_native_name(app_locale())) ?>">
-                <span class="language-current" aria-hidden="true">&#127760;</span>
+                <span class="language-globe" aria-hidden="true">&#127760;</span>
+                <span class="language-current"><?= e(locale_native_name(app_locale())) ?></span>
             </summary>
             <span class="language-options">
                 <?php foreach (supported_locales() as $locale): ?>

@@ -53,9 +53,8 @@ nav a:hover { color: var(--accent); }
     align-items: center;
     justify-content: center;
     gap: 6px;
-    width: 40px;
     min-height: 36px;
-    padding: 7px 10px;
+    padding: 7px 12px;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: #fff;
@@ -68,11 +67,17 @@ nav a:hover { color: var(--accent); }
 .language-picker summary::after {
     content: none;
 }
+.language-globe {
+    display: inline-flex;
+    align-items: center;
+    font-size: 17px;
+    line-height: 1;
+}
 .language-current {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 17px;
+    font-size: 13px;
     line-height: 1;
     white-space: nowrap;
 }
