@@ -51,9 +51,11 @@ nav a:hover { color: var(--accent); }
 .language-picker summary {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    width: 40px;
     min-height: 36px;
-    padding: 7px 12px;
+    padding: 7px 10px;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: #fff;
@@ -64,20 +66,14 @@ nav a:hover { color: var(--accent); }
 }
 .language-picker summary::-webkit-details-marker { display: none; }
 .language-picker summary::after {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-right: 2px solid var(--muted);
-    border-bottom: 2px solid var(--muted);
-    transform: rotate(45deg) translateY(-2px);
-}
-.language-picker[open] summary::after {
-    transform: rotate(225deg) translate(-1px, -1px);
+    content: none;
 }
 .language-current {
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    font-size: 17px;
+    line-height: 1;
     white-space: nowrap;
 }
 .language-options {
@@ -86,7 +82,7 @@ nav a:hover { color: var(--accent); }
     top: calc(100% + 8px);
     z-index: 30;
     display: grid;
-    min-width: 120px;
+    min-width: 136px;
     padding: 6px;
     border: 1px solid var(--line);
     border-radius: 8px;

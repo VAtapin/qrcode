@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 return [
+    'language.name' => 'English',
     'brand.tagline' => 'QR to me · q-2.me',
     'nav.gallery' => 'Gallery',
     'nav.new_link' => 'New link',

@@ -121,7 +121,43 @@ function legal_default_privacy_text(?string $locale = null): string
  */
 function supported_locales(): array
 {
-    return config('app.locales', ['de', 'ru', 'en']);
+    static $locales;
+
+    if ($locales !== null) {
+        return $locales;
+    }
+
+    $files = glob(dirname(__DIR__) . '/app/Lang/*.php') ?: [];
+    $locales = [];
+    foreach ($files as $file) {
+        $locale = basename($file, '.php');
+        if (preg_match('/^[a-z]{2}(?:_[A-Z]{2})?$/', $locale) === 1) {
+            $locales[] = $locale;
+        }
+    }
+
+    sort($locales);
+
+    return $locales !== [] ? $locales : [default_locale()];
+}
+
+/**
+ * Returns the native display name for a locale.
+ */
+function locale_native_name(string $locale): string
+{
+    static $names = [];
+
+    if (array_key_exists($locale, $names)) {
+        return $names[$locale];
+    }
+
+    $file = dirname(__DIR__) . '/app/Lang/' . $locale . '.php';
+    $catalog = is_file($file) ? require $file : [];
+    $name = is_array($catalog) ? ($catalog['language.name'] ?? '') : '';
+    $names[$locale] = is_string($name) && $name !== '' ? $name : strtoupper($locale);
+
+    return $names[$locale];
 }
 
 /**

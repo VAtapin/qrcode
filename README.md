@@ -19,7 +19,7 @@ The home page shows a public gallery of approved QR codes. New links are created
 - Honeypot, time trap, and daily rate limit for public submissions.
 - Editable blacklist for reserved short codes.
 - Basic click statistics with click count, last click date, IP hash, and user agent.
-- Multilingual interface: German, Russian, and English. Default language: German.
+- Multilingual interface loaded from `app/Lang/*.php`. Default language: German.
 - Editable application settings in the admin panel.
 - Editable Impressum and privacy page texts stored in the database.
 
@@ -89,7 +89,6 @@ Important configuration values:
     'timezone' => 'Europe/Berlin',
     'secret_salt' => 'long-random-secret',
     'default_locale' => 'de',
-    'locales' => ['de', 'ru', 'en'],
 ],
 'db' => [
     'dsn' => 'mysql:host=localhost;dbname=DB_NAME;charset=utf8mb4',
@@ -166,13 +165,15 @@ Search works by title and short code. The gallery is paginated to keep it fast.
 
 ## Languages
 
-Public language routes:
+Public language routes are generated from the files in `app/Lang`:
 
 ```text
 /de
 /ru
 /en
 ```
+
+To add a language, create a new `app/Lang/{locale}.php` file with a `language.name` entry. The language selector will pick it up automatically.
 
 Short links stay short and do not receive a language prefix:
 

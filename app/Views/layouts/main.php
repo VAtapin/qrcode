@@ -54,13 +54,13 @@ $socialImageUrl = url('assets/social-preview.png');
             <a href="/login"><?= e(__('nav.login')) ?></a>
         <?php endif; ?>
         <details class="language-picker">
-            <summary aria-label="Language">
-                <span class="language-current">Language: <?= e(strtoupper(app_locale())) ?></span>
+            <summary aria-label="<?= e(locale_native_name(app_locale())) ?>">
+                <span class="language-current" aria-hidden="true">&#127760;</span>
             </summary>
             <span class="language-options">
                 <?php foreach (supported_locales() as $locale): ?>
                     <?php if (app_locale() !== $locale): ?>
-                        <a href="<?= e(locale_switch_url($locale)) ?>"><?= e(strtoupper($locale)) ?></a>
+                        <a href="<?= e(locale_switch_url($locale)) ?>" lang="<?= e($locale) ?>"><?= e(locale_native_name($locale)) ?></a>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </span>
