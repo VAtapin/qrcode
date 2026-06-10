@@ -53,16 +53,18 @@ $socialImageUrl = url('assets/social-preview.png');
         <?php else: ?>
             <a href="/login"><?= e(__('nav.login')) ?></a>
         <?php endif; ?>
-        <span class="language-picker" aria-label="Language">
-            <span class="language-current">🌐 <?= e(strtoupper(app_locale())) ?></span>
+        <details class="language-picker">
+            <summary aria-label="Language">
+                <span class="language-current">Language: <?= e(strtoupper(app_locale())) ?></span>
+            </summary>
             <span class="language-options">
-            <?php foreach (supported_locales() as $locale): ?>
-                <?php if (app_locale() !== $locale): ?>
-                    <a href="<?= e(locale_switch_url($locale)) ?>"><?= e(strtoupper($locale)) ?></a>
-                <?php endif; ?>
-            <?php endforeach; ?>
+                <?php foreach (supported_locales() as $locale): ?>
+                    <?php if (app_locale() !== $locale): ?>
+                        <a href="<?= e(locale_switch_url($locale)) ?>"><?= e(strtoupper($locale)) ?></a>
+                    <?php endif; ?>
+                <?php endforeach; ?>
             </span>
-        </span>
+        </details>
     </nav>
 </header>
 <main class="container">
@@ -74,7 +76,7 @@ $socialImageUrl = url('assets/social-preview.png');
 <footer class="site-footer">
     <span>&copy; <?= date('Y') ?> Q to me</span>
     <span><?= e(__('footer.maker')) ?>: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a></span>
-    <span><a href="<?= e(localized_path('impressum')) ?>">Impressum</a> · <a href="<?= e(localized_path('datenschutz')) ?>"><?= e(__('privacy.title')) ?></a></span>
+    <span><a href="<?= e(localized_path('impressum')) ?>">Impressum</a> | <a href="<?= e(localized_path('datenschutz')) ?>"><?= e(__('privacy.title')) ?></a></span>
 </footer>
 </body>
 </html>

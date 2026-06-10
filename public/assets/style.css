@@ -43,17 +43,36 @@ nav { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 nav a { text-decoration: none; font-weight: 700; }
 nav a:hover { color: var(--accent); }
 .language-picker {
+    position: relative;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+}
+.language-picker summary {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 9px;
+    gap: 6px;
+    min-height: 36px;
+    padding: 7px 12px;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: #fff;
     color: var(--ink);
-    font-size: 13px;
-    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
     box-shadow: 0 6px 16px rgba(17, 45, 53, .06);
+}
+.language-picker summary::-webkit-details-marker { display: none; }
+.language-picker summary::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg) translateY(-2px);
+}
+.language-picker[open] summary::after {
+    transform: rotate(225deg) translate(-1px, -1px);
 }
 .language-current {
     display: inline-flex;
@@ -62,20 +81,31 @@ nav a:hover { color: var(--accent); }
     white-space: nowrap;
 }
 .language-options {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 30;
+    display: grid;
+    min-width: 120px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 16px 32px rgba(17, 45, 53, .14);
 }
 .language-options a {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    min-height: 26px;
-    padding: 4px 7px;
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 12px;
+    min-height: 34px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    color: var(--ink);
+    font-size: 13px;
+    white-space: nowrap;
+}
+.language-options a:hover {
+    background: #edf7f6;
+    color: var(--accent-dark);
 }
 .container { max-width: 1120px; margin: 32px auto; padding: 0 20px; }
 .site-footer {
