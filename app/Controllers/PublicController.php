@@ -76,6 +76,14 @@ final class PublicController
     }
 
     /**
+     * Shows the terms of use page.
+     */
+    public function agb(): void
+    {
+        view('public/agb', ['title' => __('agb.title')]);
+    }
+
+    /**
      * Shows the privacy policy page.
      */
     public function datenschutz(): void

@@ -50,7 +50,7 @@
         <?php endif; ?>
         <label class="check">
             <input type="checkbox" name="agree" value="1" required>
-            <span><?= e(__('form.agree')) ?></span>
+            <span><?= e(__('form.agree')) ?> <a href="<?= e(localized_path('agb')) ?>" target="_blank" rel="noreferrer"><?= e(__('agb.title')) ?></a></span>
         </label>
         <button class="primary" type="submit"><?= e(__('button.create_qr')) ?></button>
     </form>

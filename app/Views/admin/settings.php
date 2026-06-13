@@ -58,6 +58,10 @@
                 <textarea name="legal_impressum_text" rows="7"><?= e($settings['legal.impressum_text'] ?? '') ?></textarea>
             </label>
             <label>
+                <?= e(__('settings.agb_text')) ?> (<?= e(strtoupper($legalLocale ?? app_locale())) ?>)
+                <textarea name="legal_agb" rows="9"><?= e($settings['legal.agb'] ?? '') ?></textarea>
+            </label>
+            <label>
                 <?= e(__('settings.privacy_text')) ?> (<?= e(strtoupper($legalLocale ?? app_locale())) ?>)
                 <textarea name="legal_privacy_text" rows="9"><?= e($settings['legal.privacy_text'] ?? '') ?></textarea>
             </label>

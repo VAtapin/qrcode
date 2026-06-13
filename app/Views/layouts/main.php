@@ -77,7 +77,7 @@ $socialImageUrl = url('assets/social-preview.png');
 <footer class="site-footer">
     <span>&copy; <?= date('Y') ?> Q to me</span>
     <span><?= e(__('footer.maker')) ?>: <a href="https://bible-media.de/" target="_blank" rel="noreferrer">Bible Media Agentur</a></span>
-    <span><a href="<?= e(localized_path('impressum')) ?>">Impressum</a> | <a href="<?= e(localized_path('datenschutz')) ?>"><?= e(__('privacy.title')) ?></a></span>
+    <span><a href="<?= e(localized_path('impressum')) ?>">Impressum</a> | <a href="<?= e(localized_path('agb')) ?>"><?= e(__('agb.title')) ?></a> | <a href="<?= e(localized_path('datenschutz')) ?>"><?= e(__('privacy.title')) ?></a></span>
 </footer>
 </body>
 </html>

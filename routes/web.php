@@ -20,6 +20,7 @@ $publicRoutes = [
     'new' => [PublicController::class, 'create'],
     'create' => [PublicController::class, 'create'],
     'impressum' => [PublicController::class, 'impressum'],
+    'agb' => [PublicController::class, 'agb'],
     'datenschutz' => [PublicController::class, 'datenschutz'],
 ];
 

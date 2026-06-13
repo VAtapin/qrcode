@@ -74,6 +74,7 @@ final class AdminController
                 'legal.privacy_text.' . $legalLocale,
                 legal_default_privacy_text($legalLocale)
             ),
+            'legal.agb' => setting('legal.agb.' . $legalLocale, ''),
             'gallery.enabled' => setting('gallery.enabled', '1'),
         ];
 
@@ -138,6 +139,7 @@ final class AdminController
         } else {
             $settings['legal.impressum_text.' . $legalLocale] = trim((string) ($_POST['legal_impressum_text'] ?? ''));
             $settings['legal.privacy_text.' . $legalLocale] = trim((string) ($_POST['legal_privacy_text'] ?? ''));
+            $settings['legal.agb.' . $legalLocale] = trim((string) ($_POST['legal_agb'] ?? ''));
         }
 
         try {

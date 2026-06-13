@@ -311,7 +311,7 @@ function locale_path_can_be_prefixed(string $path): bool
         return true;
     }
 
-    return in_array($path, ['/new', '/create', '/impressum', '/datenschutz'], true)
+    return in_array($path, ['/new', '/create', '/impressum', '/agb', '/datenschutz'], true)
         || str_starts_with($path, '/result/')
         || str_starts_with($path, '/qr/');
 }
