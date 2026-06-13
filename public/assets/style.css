@@ -115,6 +115,7 @@ nav a:hover { color: var(--accent); }
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    max-width: 1120px;
     margin: 0 auto;
     padding: 18px 20px 28px;
     color: var(--muted);
