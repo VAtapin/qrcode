@@ -108,7 +108,7 @@ nav a:hover { color: var(--accent); }
     background: #edf7f6;
     color: var(--accent-dark);
 }
-.container {  margin: 32px auto; padding: 0 20px; }
+.container { max-width: 90%; margin: 32px auto; padding: 0 20px; }
 .site-footer {
     display: flex;
     justify-content: center;
